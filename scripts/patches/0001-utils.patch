@@ -1,0 +1,311 @@
+diff -r -u ../../floo-web/src/sdk/utils/log.js ../imsdk/utils/log.js
+--- ../../floo-web/src/sdk/utils/log.js	2021-01-12 15:14:34.000000000 +0800
++++ ../imsdk/utils/log.js	2021-01-12 15:14:35.000000000 +0800
+@@ -1,4 +1,5 @@
+-const isProduction = process.env.NODE_ENV === 'production';
++const isProduction = false; //process.env.NODE_ENV === 'production';
++
+ const errList = [];
+ const empty = () => {};
+ const requestLog = (info) => {
+@@ -6,7 +7,7 @@
+   if (errList.length > 5) {
+     errList.splice(-5);
+   }
+-  document.querySelector('#slog').innerHTML = errList.join('<br />');
++  // document.querySelector('#slog').innerHTML = errList.join('<br />');
+ };
+ 
+ const error = isProduction ? empty : console.error;
+diff -r -u ../../floo-web/src/sdk/utils/request.js ../imsdk/utils/request.js
+--- ../../floo-web/src/sdk/utils/request.js	2021-01-12 15:17:05.000000000 +0800
++++ ../imsdk/utils/request.js	2021-01-12 15:17:06.000000000 +0800
+@@ -1,4 +1,3 @@
+-import axios from 'axios';
+ import { infoStore } from './store';
+ import log from './log';
+ import queryString from 'query-string';
+@@ -7,9 +6,10 @@
+   errTimer: null,
+   errCount: 0
+ };
++let baseUrl = '';
+ 
+ bind('refresh_ratel', (ratel) => {
+-  ratel && (axios.defaults.baseURL = ratel);
++  ratel && (baseUrl = ratel);
+ });
+ 
+ const paramCheck = (params = {}, checks = []) => {
+@@ -60,28 +60,21 @@
+   return isRequired;
+ };
+ 
+-axios.defaults.timeout = 20000;
+-// axios.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+-axios.interceptors.request.use(
+-  (config) => {
+-    const token = infoStore.getToken();
+-    const app_id = infoStore.getAppid();
+-    if (app_id) {
+-      config.headers.common['app_id'] = app_id;
+-    }
+-    if (token) {
+-      config.headers.common['access-token'] = token;
+-    }
+-
+-    if (isTokenRequired(config.url) && !token) {
+-      throw new Error('you should login  ...');
+-    }
+-    return config;
+-  },
+-  (error) => {
+-    return Promise.reject(error);
++const configHeader = (url) => {
++  const token = infoStore.getToken();
++  const app_id = infoStore.getAppid();
++
++  if (isTokenRequired(url) && !token) {
++    //triger token refresh
++    fire('flooNotice', { category: 'action', desc: 'relogin' });
++    throw new Error('you should login ...');
+   }
+-);
++
++  return {
++    'access-token': token,
++    app_id
++  };
++};
+ 
+ const dealParams = (param) => {
+   if (param.group_id) param.group_id = param.group_id - 0;
+@@ -120,42 +113,130 @@
+     params2 = dealParams(params);
+   }
+ 
+-  return axios[_method](url, params2, config)
+-    .then((response) => {
+-      clearErrCounter();
+-      const { data = {} } = response;
+-
+-      if (Object.keys(config).length !== 0) {
+-        // Request with additional config means will call the 3rd party, i.e. aliyun,
+-        // in which it's difficult to check success
+-
+-        if (typeof data.data === 'boolean' && data.data) {
+-          //ceph
+-          return;
+-        } else if (typeof data.Status === 'string' && data.Status === 'OK') {
+-          //aliyun oss
+-          return;
+-        }
+-        return Promise.reject({ config, url });
+-      }
++  let header = config.headers || configHeader(url);
++
++  if (url.indexOf('http') < 0) {
++    url = baseUrl + url;
++  }
+ 
+-      const { data: innerData, code, message } = data;
+-      if (code === 200) {
+-        log.log('======request success, ', url, innerData);
+-        return innerData;
+-      } else {
+-        if (code === 402) {
+-          //triger token refresh
+-          fire('flooNotice', { category: 'action', desc: 'relogin' });
++  if (config.operation && config.operation === 'upload_file') {
++    return new Promise((res, rej) => {
++      const options = {
++        url,
++        header,
++        filePath: params.filePath,
++        formData: params.formData,
++        name: params.name,
++        success: function (response) {
++          clearErrCounter(); // 只要服务器有响应数据，就会把响应内容写入文件并进入 success 回调，业务需要自行判断是否下载到了想要的内容
++
++          if (response.statusCode === 200) {
++            console.log('Upload file success: ', response); // do not resolve until complete;
++
++            res(response.tempFilePath);
++          } else {
++            console.error('Upload file error: ', response);
++            rej(response);
++          }
++        },
++        fail: function (err) {
++          checkErrCounter();
++          rej(err);
+         }
+-        log.req(url + '' === '' + message);
+-        return Promise.reject({ url, code, message });
+-      }
+-    })
+-    .catch((error) => {
+-      checkErrCounter();
+-      return Promise.reject(error);
++      };
++      wx.uploadFile(options);
+     });
++  }
++  if (config.operation && config.operation === 'download_file') {
++    return new Promise((res, rej) => {
++      const options = {
++        url,
++        header,
++        success: function (response) {
++          clearErrCounter(); // 只要服务器有响应数据，就会把响应内容写入文件并进入 success 回调，业务需要自行判断是否下载到了想要的内容
++
++          if (response.statusCode === 200) {
++            console.log('Download file success: ', response); // do not resolve until complete;
++
++            res(response.tempFilePath);
++          } else {
++            console.error('Download file error: ', response);
++            rej(response);
++          }
++        },
++        fail: function (err) {
++          checkErrCounter();
++          rej(err);
++        } // complete: function(response){
++        //   res(response.tempFilePath);
++        // }
++      };
++      wx.downloadFile(options);
++    });
++  }
++
++  let content_type = config.content_type || 'application/json';
++  header = Object.assign(header, {
++    'Content-Type': content_type
++  }); // return racePromise( new Promise((res, rej) => {
++
++  return new Promise((res, rej) => {
++    const options = {
++      url,
++      data: params2,
++      header,
++      method,
++      dataType: 'json',
++      success: function (response) {
++        clearErrCounter();
++        const { data = {} } = response;
++
++        if (config.headers && Object.keys(config.headers).length !== 0) {
++          // Request with additional config means will call the 3rd party, i.e. aliyun,
++          // in which it's difficult to check success
++
++          if (typeof data.data === 'boolean' && data.data) {
++            //ceph
++            return;
++          } else if (typeof data.Status === 'string' && data.Status === 'OK') {
++            //aliyun oss
++            return;
++          }
++
++          console.log('====== request got unkonwn response, ', response);
++          return Promise.reject({
++            config,
++            url
++          });
++        }
++
++        const { data: innerData, code, message } = data;
++
++        if (code === 200) {
++          log.log('======request success, ', url, innerData);
++          res(innerData);
++        } else {
++          if (code === 402) {
++            //triger token refresh
++            fire('flooNotice', { category: 'action', desc: 'relogin' });
++          }
++
++          log.req(url + '' === '' + message);
++          rej({
++            message,
++            url,
++            data
++          });
++        }
++      },
++      fail: function (err) {
++        checkErrCounter();
++        rej(err);
++      },
++      complete: function () {}
++    };
++    wx.request(options);
++  });
+ };
+ 
+ function clearErrCounter() {
+@@ -178,4 +259,16 @@
+   }
+ }
+ 
++function racePromise(proRequest) {
++  return Promise.race([
++    proRequest,
++    new Promise((resolve, reject) => {
++      setTimeout(() => {
++        wx.hideLoading();
++        reject();
++      }, 40000);
++    })
++  ]);
++}
++
+ export { request };
+diff -r -u ../../floo-web/src/sdk/utils/store/storeBase.js ../imsdk/utils/store/storeBase.js
+--- ../../floo-web/src/sdk/utils/store/storeBase.js	2021-01-12 15:35:45.000000000 +0800
++++ ../imsdk/utils/store/storeBase.js	2021-01-12 15:35:46.000000000 +0800
+@@ -4,7 +4,7 @@
+ const PARTITION_NUMBER = 31;
+ 
+ const getUid = () => {
+-  let uid = window.localStorage.getItem('key_user_id');
++  let uid = wx.getStorageSync('key_user_id');
+   if (uid) return uid - 0;
+   return;
+ };
+@@ -29,7 +29,7 @@
+   }
+ 
+   if (typeof item === 'string') {
+-    window.localStorage.setItem(skey, item);
++    wx.setStorageSync(skey, item);
+     return;
+   }
+ 
+@@ -43,7 +43,7 @@
+   }
+   try {
+     const itemString = JSON.stringify(ret);
+-    itemString && window.localStorage.setItem(skey, itemString);
++    itemString && wx.setStorageSync(skey, itemString);
+   } catch (ex) {
+     log.error('stringify error:', ex, skey, item);
+   }
+@@ -64,7 +64,7 @@
+     skey = skey + '_' + partitionId(partition_key);
+   }
+ 
+-  const itemString = window.localStorage.getItem(skey);
++  const itemString = wx.getStorageSync(skey);
+   if (!itemString) return undefined;
+   let ret = itemString;
+   try {
+@@ -85,7 +85,7 @@
+   if (partition_key >= 0) {
+     skey = skey + '_' + partitionId(partition_key);
+   }
+-  window.localStorage.removeItem(skey);
++  wx.removeStorageSync(skey);
+ };
+ 
+ const removeAllItems = (key, hasuid = true) => {

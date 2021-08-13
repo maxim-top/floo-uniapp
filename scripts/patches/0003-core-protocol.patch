@@ -1,0 +1,300 @@
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/conversation.js ../imsdk/core/protocol/class/conversation.js
+--- ../../floo-web/src/sdk/core/protocol/class/conversation.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/conversation.js	2021-01-12 13:55:08.000000000 +0800
+@@ -1,5 +1,5 @@
+ import jsonDescriptor from '../conversation';
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+ const Conv = root.lookupType('im.floo.protobuf.Conversation');
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/conversationunread.js ../imsdk/core/protocol/class/conversationunread.js
+--- ../../floo-web/src/sdk/core/protocol/class/conversationunread.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/conversationunread.js	2021-01-12 14:54:29.000000000 +0800
+@@ -1,6 +1,5 @@
+ import { decode as xidDecode } from './xid';
+-
+-import protobuf from 'protobufjs/light';
++import protobuf from './protobufjs';
+ import jsonDescriptor from '../xsync';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/frame.js ../imsdk/core/protocol/class/frame.js
+--- ../../floo-web/src/sdk/core/protocol/class/frame.js	2021-01-12 14:55:11.000000000 +0800
++++ ../imsdk/core/protocol/class/frame.js	2021-01-12 14:55:12.000000000 +0800
+@@ -1,5 +1,5 @@
+ // 有其他调用
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../xsync';
+ import { STATIC_FRAME_COMMAND } from '../../../utils/static';
+ import { decode as unreadDecode, encode as unreaddlEncode } from './unreaddl';
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/groupnotice.js ../imsdk/core/protocol/class/groupnotice.js
+--- ../../floo-web/src/sdk/core/protocol/class/groupnotice.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/groupnotice.js	2021-01-12 14:55:45.000000000 +0800
+@@ -1,5 +1,5 @@
+ import { encode as xidEncode } from './xid';
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../groupnotice';
+ // import { encode as statusEncode, decode as statusDecode } from './status';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/index.js ../imsdk/core/protocol/class/index.js
+--- ../../floo-web/src/sdk/core/protocol/class/index.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/index.js	2021-01-12 14:53:55.000000000 +0800
+@@ -8,7 +8,7 @@
+ // import { STATIC_FRAME_COMMAND } from '@utils/static';
+ 
+ // use int64 as long in protobuf
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import Long from 'long';
+ protobuf.util.Long = Long;
+ protobuf.configure();
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/info.js ../imsdk/core/protocol/class/info.js
+--- ../../floo-web/src/sdk/core/protocol/class/info.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/info.js	2021-01-12 13:55:08.000000000 +0800
+@@ -1,6 +1,5 @@
+ import jsonDescriptor from '../info';
+-import protobuf from 'protobufjs/light';
+-
++import protobuf from 'protobufjs';
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+ const Info = root.lookupType('im.floo.protobuf.Info');
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/messagebody.js ../imsdk/core/protocol/class/messagebody.js
+--- ../../floo-web/src/sdk/core/protocol/class/messagebody.js	2021-01-12 14:56:26.000000000 +0800
++++ ../imsdk/core/protocol/class/messagebody.js	2021-01-12 14:56:26.000000000 +0800
+@@ -1,5 +1,5 @@
+ import { constr as xidConstr } from './xid';
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../messagebody';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/meta.js ../imsdk/core/protocol/class/meta.js
+--- ../../floo-web/src/sdk/core/protocol/class/meta.js	2021-01-12 14:58:03.000000000 +0800
++++ ../imsdk/core/protocol/class/meta.js	2021-01-12 14:58:04.000000000 +0800
+@@ -1,4 +1,4 @@
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../xsync';
+ import { STATIC_META_NAMESPACE } from '../../../utils/static';
+ import { decode as msgBodyDecode, encode as msgBodyEncode } from './messagebody';
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/notice.js ../imsdk/core/protocol/class/notice.js
+--- ../../floo-web/src/sdk/core/protocol/class/notice.js	2021-01-12 14:58:29.000000000 +0800
++++ ../imsdk/core/protocol/class/notice.js	2021-01-12 14:58:30.000000000 +0800
+@@ -1,5 +1,5 @@
+ import { decode as xidDecode } from './xid';
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../xsync';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/provision.js ../imsdk/core/protocol/class/provision.js
+--- ../../floo-web/src/sdk/core/protocol/class/provision.js	2021-01-12 15:38:07.000000000 +0800
++++ ../imsdk/core/protocol/class/provision.js	2021-01-12 14:59:10.000000000 +0800
+@@ -1,4 +1,4 @@
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../xsync';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+@@ -13,4 +13,7 @@
+   return Provision.encode(obj).finish();
+ };
+ 
+-export { decode, encode };
++export {
++  decode,
++  encode
++};
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/rosternotice.js ../imsdk/core/protocol/class/rosternotice.js
+--- ../../floo-web/src/sdk/core/protocol/class/rosternotice.js	2021-01-12 14:59:58.000000000 +0800
++++ ../imsdk/core/protocol/class/rosternotice.js	2021-01-12 15:00:06.000000000 +0800
+@@ -1,4 +1,4 @@
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../rosternotice';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/status.js ../imsdk/core/protocol/class/status.js
+--- ../../floo-web/src/sdk/core/protocol/class/status.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/status.js	2021-01-12 15:00:20.000000000 +0800
+@@ -1,4 +1,4 @@
+-import protobuf from 'protobufjs/light';
++import protobuf from './protobufjs';
+ import jsonDescriptor from '../xsync';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/syncdl.js ../imsdk/core/protocol/class/syncdl.js
+--- ../../floo-web/src/sdk/core/protocol/class/syncdl.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/syncdl.js	2021-01-12 15:00:41.000000000 +0800
+@@ -6,7 +6,7 @@
+ import { decode as infoDecode } from './info';
+ import { decode as convDecode } from './conversation';
+ import { STATIC_META_NAMESPACE } from '../../../utils/static';
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../xsync';
+ 
+ const SyncDL = protobuf.Root.fromJSON(jsonDescriptor).lookupType('im.floo.protobuf.SyncDL');
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/syncul.js ../imsdk/core/protocol/class/syncul.js
+--- ../../floo-web/src/sdk/core/protocol/class/syncul.js	2021-01-12 15:00:56.000000000 +0800
++++ ../imsdk/core/protocol/class/syncul.js	2021-01-12 15:00:56.000000000 +0800
+@@ -1,4 +1,4 @@
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../xsync';
+ import { constr as metaConstr } from './meta';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/unreaddl.js ../imsdk/core/protocol/class/unreaddl.js
+--- ../../floo-web/src/sdk/core/protocol/class/unreaddl.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/unreaddl.js	2021-01-12 15:01:05.000000000 +0800
+@@ -1,4 +1,4 @@
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../xsync';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/usernotice.js ../imsdk/core/protocol/class/usernotice.js
+--- ../../floo-web/src/sdk/core/protocol/class/usernotice.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/usernotice.js	2021-01-12 15:01:13.000000000 +0800
+@@ -1,4 +1,4 @@
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../usernotice';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+diff -r -u ../../floo-web/src/sdk/core/protocol/class/xid.js ../imsdk/core/protocol/class/xid.js
+--- ../../floo-web/src/sdk/core/protocol/class/xid.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/class/xid.js	2021-01-12 15:01:23.000000000 +0800
+@@ -1,4 +1,4 @@
+-import protobuf from 'protobufjs/light';
++import protobuf from 'protobufjs';
+ import jsonDescriptor from '../xsync';
+ 
+ var root = protobuf.Root.fromJSON(jsonDescriptor);
+diff -r -u ../../floo-web/src/sdk/core/protocol/conversation.js ../imsdk/core/protocol/conversation.js
+--- ../../floo-web/src/sdk/core/protocol/conversation.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/conversation.js	2021-01-12 13:55:08.000000000 +0800
+@@ -2,8 +2,8 @@
+ (function (global, factory) {
+   /* global define, require, module */
+ 
+-  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs/light'], factory);
+-  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs/light'));
++  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs'], factory);
++  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs'));
+ })(this, function ($protobuf) {
+   'use strict';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/groupnotice.js ../imsdk/core/protocol/groupnotice.js
+--- ../../floo-web/src/sdk/core/protocol/groupnotice.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/groupnotice.js	2021-01-12 13:55:08.000000000 +0800
+@@ -2,8 +2,8 @@
+ (function (global, factory) {
+   /* global define, require, module */
+ 
+-  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs/light'], factory);
+-  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs/light'));
++  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs'], factory);
++  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs'));
+ })(this, function ($protobuf) {
+   'use strict';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/info.js ../imsdk/core/protocol/info.js
+--- ../../floo-web/src/sdk/core/protocol/info.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/info.js	2021-01-12 13:55:08.000000000 +0800
+@@ -2,8 +2,8 @@
+ (function (global, factory) {
+   /* global define, require, module */
+ 
+-  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs/light'], factory);
+-  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs/light'));
++  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs'], factory);
++  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs'));
+ })(this, function ($protobuf) {
+   'use strict';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/make.sh ../imsdk/core/protocol/make.sh
+--- ../../floo-web/src/sdk/core/protocol/make.sh	2020-08-25 17:29:11.000000000 +0800
++++ ../imsdk/core/protocol/make.sh	2020-08-26 16:01:15.000000000 +0800
+@@ -18,4 +18,7 @@
+   pbjs -t json-module ${proto_file} -o ${js_file} -r ${proto_name} --keep-case --es6
+ done
+ 
++## for miniprogram and uniapp
++find . -type f | xargs -i gsed -i 's/protobufjs\/light/protobufjs/g' {} 
++
+ echo "==== pb file make over......"
+diff -r -u ../../floo-web/src/sdk/core/protocol/messagebody.js ../imsdk/core/protocol/messagebody.js
+--- ../../floo-web/src/sdk/core/protocol/messagebody.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/messagebody.js	2021-01-12 13:55:08.000000000 +0800
+@@ -2,8 +2,8 @@
+ (function (global, factory) {
+   /* global define, require, module */
+ 
+-  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs/light'], factory);
+-  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs/light'));
++  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs'], factory);
++  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs'));
+ })(this, function ($protobuf) {
+   'use strict';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/rosternotice.js ../imsdk/core/protocol/rosternotice.js
+--- ../../floo-web/src/sdk/core/protocol/rosternotice.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/rosternotice.js	2021-01-12 13:55:08.000000000 +0800
+@@ -2,8 +2,8 @@
+ (function (global, factory) {
+   /* global define, require, module */
+ 
+-  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs/light'], factory);
+-  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs/light'));
++  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs'], factory);
++  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs'));
+ })(this, function ($protobuf) {
+   'use strict';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/usernotice.js ../imsdk/core/protocol/usernotice.js
+--- ../../floo-web/src/sdk/core/protocol/usernotice.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/usernotice.js	2021-01-12 13:55:08.000000000 +0800
+@@ -2,8 +2,8 @@
+ (function (global, factory) {
+   /* global define, require, module */
+ 
+-  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs/light'], factory);
+-  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs/light'));
++  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs'], factory);
++  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs'));
+ })(this, function ($protobuf) {
+   'use strict';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/xid.js ../imsdk/core/protocol/xid.js
+--- ../../floo-web/src/sdk/core/protocol/xid.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/xid.js	2021-01-12 13:55:08.000000000 +0800
+@@ -2,8 +2,8 @@
+ (function (global, factory) {
+   /* global define, require, module */
+ 
+-  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs/light'], factory);
+-  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs/light'));
++  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs'], factory);
++  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs'));
+ })(this, function ($protobuf) {
+   'use strict';
+ 
+diff -r -u ../../floo-web/src/sdk/core/protocol/xsync.js ../imsdk/core/protocol/xsync.js
+--- ../../floo-web/src/sdk/core/protocol/xsync.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/protocol/xsync.js	2021-01-12 13:55:08.000000000 +0800
+@@ -2,8 +2,8 @@
+ (function (global, factory) {
+   /* global define, require, module */
+ 
+-  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs/light'], factory);
+-  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs/light'));
++  /* AMD */ if (typeof define === 'function' && define.amd) define(['protobufjs'], factory);
++  /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports) module.exports = factory(require('protobufjs'));
+ })(this, function ($protobuf) {
+   'use strict';
+ 

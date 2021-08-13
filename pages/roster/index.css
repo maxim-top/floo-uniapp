@@ -1,0 +1,79 @@
+/**index.wxss**/
+.container {
+  display: block;
+  padding: 0rpx 30rpx;
+  background: #fefefe;
+}
+
+.inputer {
+  height: 100rpx;
+  width: 750rpx;
+  position: fixed;
+  bottom: 20rpx;
+  left: 5rpx;
+  border-top: 1rpx solid #ccc;
+  background: white;
+}
+.inputer .voice {
+  height: 60rpx;
+  width: 60rpx;
+  float: left;
+  margin: 10rpx;
+  margin-top: 20rpx;
+}
+.inputer .input {
+  margin: 8rpx 20rpx 10rpx 20rpx;
+  width: 650rpx;
+  height: 80rpx;
+  margin-left: 80rpx;
+  border: 1px solid #ddd;
+  border-radius: 8rpx;
+  font-size: 30rpx;
+  text-indent: 15rpx;
+}
+
+.inputer .recorder {
+  margin: 8rpx 20rpx 10rpx 20rpx;
+  width: 650rpx;
+  height: 80rpx;
+  text-align: center;
+  font-size: 36rpx;
+  margin-left: 80rpx;
+  line-height: 80rpx;
+}
+
+.back {
+  height: 64rpx;
+  width: 120rpx;
+}
+.back .back_kmg {
+  width: 40rpx;
+  height: 40rpx;
+  margin-top: 12rpx;
+}
+
+.history_button {
+  position: fixed;
+  right: 66px;
+  width: 64px;
+  height: 18px;
+  line-height: 32px;
+  margin-top: -12px;
+  font-size: 12px;
+  color: #319de1;
+}
+
+.delete_button {
+  position: fixed;
+  right: 2px;
+  width: 64px;
+  height: 18px;
+  line-height: 32px;
+  margin-top: -12px;
+  font-size: 12px;
+  color: #319de1;
+}
+
+.delete_button:hover {
+  color: #880000;
+}

@@ -1,0 +1,56 @@
+/**index.wxss**/
+.atitle {
+  font-size: 36rpx;
+  line-height: 64rpx;
+  color: #000;
+}
+.container {
+  display: block;
+  padding: 64px 32rpx 0 32rpx;
+  margin: 0;
+}
+.item {
+  height: 140rpx;
+  position: relative;
+  box-sizing: border-box;
+  border-top: 1rpx solid #dfdfdf;
+}
+.item .avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 48rpx;
+  float: left;
+  margin-top: 22rpx;
+}
+
+.item .name {
+  height: 42rpx;
+  line-height: 42rpx;
+  padding-top: 26rpx;
+  margin-left: 112rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+.item .last_msg {
+  font-size: 26rpx;
+  margin-top: 12rpx;
+  color: #999;
+  height: 36rpx;
+  line-height: 36rpx;
+  margin-left: 112rpx;
+  overflow: hidden;
+}
+
+.item .unread_number {
+  position: absolute;
+  top: 7rpx;
+  left: 80rpx;
+  height: 30rpx;
+  color: white;
+  background: red;
+  font-size: 20rpx;
+  border-radius: 15rpx;
+  line-height: 30rpx;
+  min-width: 30rpx;
+  text-align: center;
+}

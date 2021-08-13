@@ -1,0 +1,41 @@
+/**index.wxss**/
+.container {
+  display: block;
+  padding: 0 10px;
+  margin: 0;
+  padding-top: 64px;
+}
+.item {
+  height: 120rpx;
+}
+.item .avatar {
+  width: 100rpx;
+  height: 100rpx;
+  float: left;
+  margin: 10rpx;
+}
+
+.item .uname {
+  float: left;
+  height: 100rpx;
+  line-height: 100rpx;
+  margin-top: 10rpx;
+  margin-left: 15px;
+}
+
+.sepline {
+  height: 45rpx;
+}
+
+.notify {
+  font-size: 24rpx;
+  color: #bbb;
+  text-align: center;
+  line-height: 50rpx;
+  height: 50rpx;
+  background: #eee;
+  position: fixed;
+  top: 0;
+  left: 20rpx;
+  width: 710rpx;
+}

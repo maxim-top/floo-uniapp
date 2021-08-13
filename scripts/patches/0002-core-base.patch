@@ -1,0 +1,195 @@
+diff -r -u ../../floo-web/src/sdk/core/base/dataLogics.js ../imsdk/core/base/dataLogics.js
+--- ../../floo-web/src/sdk/core/base/dataLogics.js	2021-01-12 14:32:00.000000000 +0800
++++ ../imsdk/core/base/dataLogics.js	2021-01-12 14:32:01.000000000 +0800
+@@ -615,6 +615,7 @@
+   // messageStore.saveGroupMessage(meta);
+   fire('onGroupInvitedAccepted', meta);
+ });
++
+ bind('imGroupInvitedDeclined', (meta) => {
+   // 邀请被拒绝，from 是 点 拒绝的人
+   const { payload } = meta;
+diff -r -u ../../floo-web/src/sdk/core/base/index.js ../imsdk/core/base/index.js
+--- ../../floo-web/src/sdk/core/base/index.js	2021-01-12 14:43:18.000000000 +0800
++++ ../imsdk/core/base/index.js	2021-01-12 14:43:19.000000000 +0800
+@@ -135,7 +135,7 @@
+         });
+     })
+     .catch((ex) => {
+-      fire('loginFailure', 'token failure:' + ex.message);
++      fire('loginFail', 'token failure:' + ex.message);
+     });
+ };
+ 
+@@ -191,7 +191,7 @@
+         });
+     })
+     .catch((ex) => {
+-      fire('loginFailure', 'token failure:' + ex.message);
++      fire('loginFail', 'token failure:' + ex.message);
+     });
+ };
+ 
+diff -r -u ../../floo-web/src/sdk/core/base/io/index.js ../imsdk/core/base/io/index.js
+--- ../../floo-web/src/sdk/core/base/io/index.js	2021-01-12 13:55:28.000000000 +0800
++++ ../imsdk/core/base/io/index.js	2021-01-12 14:50:01.000000000 +0800
+@@ -1,4 +1,3 @@
+-import io from 'socket.io-client';
+ import * as http from './httpIo';
+ import log from '../../../utils/log';
+ import { infoStore } from '../../../utils/store';
+@@ -32,8 +31,6 @@
+   return Math.floor(Math.random() * (CONNECT_DELAY_MAX - CONNECT_DELAY_MIN)) + CONNECT_DELAY_MIN;
+ };
+ 
+-let socket = null; // for web
+-
+ const startHeartbeat = () => {
+   heartTimer && clearInterval(heartTimer);
+   heartTimer = setInterval(() => {
+@@ -80,11 +77,6 @@
+ };
+ 
+ const socket_connect = () => {
+-  // cleanup old connections
+-  if (socket) {
+-    socket.destroy();
+-  }
+-
+   const { fireplace } = config;
+   log.log('................................. will connect : ', fireplace);
+   fire('flooNotice', {
+@@ -92,42 +84,46 @@
+     desc: 'socket connecting...'
+   });
+ 
+-  socket = io(fireplace, {
++  wx.connectSocket({
++    url: fireplace,
++    tcpNoDelay: true,
+     timeout: connectTimeout(),
+-    transports: ['websocket']
+-  });
+-
+-  socket.on('connect', () => {
+-    log.log('=================  socket connected ');
+-    fire('flooNotice', {
+-      category: 'loginMessage',
+-      desc: 'socket connect success...'
+-    });
+-
+-    // FIXME: why can not send message immediately after connected.
+-    // startProvision();
+-    provisionTimer && clearTimeout(provisionTimer);
+-    provisionTimer = setTimeout(startProvision, provisionDelayTime());
++    success: () => {
++      log.info('================= Success connect to', fireplace);
++      fire('flooNotice', { category: 'loginMessage', desc: 'socket connect success...' });
++
++      // delay to socket connected in case no socketOpen event;
++      provisionTimer && clearTimeout(provisionTimer);
++      provisionTimer = setTimeout(startProvision, provisionDelayTime());
++    },
++    fail: (err) => {
++      log.error('================= Failed to connect ', fireplace, ' error: ', err);
++      fire('reconnect', { reason: 'ConnectFail' });
++    }
+   });
++};
+ 
+-  socket.on('frame', (bytes) => {
+-    onFrame(bytes);
+-  });
++wx.onSocketOpen(function () {
++  log.log('=================  socket connected ');
++  startProvision();
+ 
+-  socket.on('disconnect', (reason) => {
+-    log.log('=================  socket disconnected due to ', reason);
+-    fire('reconnect', { reason });
+-  });
++  // no need to use timer;
++  provisionTimer && clearTimeout(provisionTimer);
++});
++wx.onSocketMessage((bytes) => {
++  onFrame(bytes.data);
++});
++wx.onSocketError((err) => {
++  log.error('=================  socket error: ', err);
++  wx.closeSocket();
++});
++wx.onSocketClose((res) => {
++  const reason = res.reason;
++  log.error('=================  socket disconnected due to ', reason);
+ 
+-  socket.on('error', (error) => {
+-    log.log('=================  socket error: ', error);
+-    fire('reconnect', { reason: 'SocketError' });
+-  });
+-  socket.on('reconnect_attempt', (attemptNum) => {
+-    log.log('=================  socket reconnect_attempt: ', attemptNum);
+-    socket.io.opts.transports = ['polling', 'websocket'];
+-  });
+-};
++  if (res.code == 1000) return; //won't reconnect if connection closed by floo
++  fire('reconnect', { reason });
++});
+ 
+ const reconnectWithTimesCheck = () => {
+   //check if we've tried too many times on one server
+@@ -144,7 +140,7 @@
+   const delay = connectDelayTime();
+   log.error('================= socket will reconnect in ', delay, ' ms (', connectTimes, ')');
+   setTimeout(() => {
+-    socket.connect();
++    socket_connect();
+   }, delay);
+ };
+ 
+@@ -174,12 +170,32 @@
+     buffView[i] = v;
+   });
+ 
+-  socket.emit('frame', buffArr);
++  wx.sendSocketMessage({
++    data: buffArr,
++    fail: function (err) {
++      const { errMsg } = err;
++
++      log.error('=============== fail to send message, err: ', errMsg);
++      wx.closeSocket();
++
++      fire('reconnect', { reason: 'SendFail' });
++      // if (errMsg.indexOf("WebSocket is not connected") >= 0) {
++      //   //未链接
++      //   fire('onDisconnect');
++      // }
++    }
++  });
+ };
+ 
+ const disConnect = () => {
+   userStatus = 'logout';
+-  socket.disconnect();
++  wx.closeSocket({
++    code: 1000,
++    reason: 'FlooCommand',
++    fail: function (err) {
++      console.log('disconnect error: ', err.errMsg);
++    }
++  });
+ };
+ 
+ const floo_io = Object.assign(http, {
+diff -r -u ../../floo-web/src/sdk/core/base/messageMaker.js ../imsdk/core/base/messageMaker.js
+--- ../../floo-web/src/sdk/core/base/messageMaker.js	2021-01-12 14:44:48.000000000 +0800
++++ ../imsdk/core/base/messageMaker.js	2021-01-12 14:44:50.000000000 +0800
+@@ -55,7 +55,7 @@
+   sprovision.setSdkvsn('2.0.0');
+   sprovision.setEncryptmethod(STATIC_FRAME_ENCRYPTMETHOD.AES_CBC_128);
+   sprovision.setEncryptkey(infoStore.getAesKey());
+-  sprovision.setDeviceinfo('Web');
++  sprovision.setDeviceinfo('Uniapp');
+   const sframe = new frame();
+   sframe.setCommond(STATIC_FRAME_COMMAND.PROVISION);
+   sframe.setPayload(sprovision);

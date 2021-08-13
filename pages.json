@@ -1,0 +1,142 @@
+{
+  "pages": [
+    {
+      "path": "pages/account/login/index",
+      "style": {}
+    },
+    {
+      "path": "pages/account/reg/index",
+      "style": {}
+    },
+    {
+      "path": "pages/account/loginbind/index",
+      "style": {}
+    },
+    {
+      "path": "pages/account/loginbindreg/index",
+      "style": {}
+    },
+    {
+      "path": "pages/account/logincode/index",
+      "style": {}
+    },
+    {
+      "path": "pages/account/loginpass/index",
+      "style": {}
+    },
+    {
+      "path": "pages/account/regbind/index",
+      "style": {}
+    },
+    {
+      "path": "pages/roster/index",
+      "style": {}
+    },
+    {
+      "path": "pages/roster/message/index",
+      "style": {
+        "component": true
+      }
+    },
+    {
+      "path": "pages/roster/add/index",
+      "style": {}
+    },
+    {
+      "path": "pages/group/index",
+      "style": {}
+    },
+    {
+      "path": "pages/group/message/index",
+      "style": {
+        "component": true
+      }
+    },
+    {
+      "path": "pages/group/create/index",
+      "style": {}
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {}
+    },
+    {
+      "path": "pages/contact/index",
+      "style": {}
+    },
+    {
+      "path": "pages/conversation/index",
+      "style": {}
+    },
+    {
+      "path": "pages/work/list/index",
+      "style": {}
+    },
+    {
+      "path": "pages/work/detail/index",
+      "style": {}
+    },
+    {
+      "path": "pages/work/sign/index",
+      "style": {}
+    },
+    {
+      "path": "pages/components/prompt/index",
+      "style": {
+        "component": true
+      }
+    },
+    {
+      "path": "pages/components/snav/index",
+      "style": {
+        "component": true
+      }
+    },
+    {
+      "path": "pages/profile/about/index",
+      "style": {}
+    },
+    {
+      "path": "pages/profile/userinfo/index",
+      "style": {}
+    },
+    {
+      "path": "pages/profile/qrcode/index",
+      "style": {}
+    }
+  ],
+  "tabBar": {
+    "color": "#9B9BA9",
+    "selectedColor": "#333333",
+    "list": [
+      {
+        "pagePath": "pages/conversation/index",
+        "text": "对话",
+        "iconPath": "/static/pages/image/tab/recent.png",
+        "selectedIconPath": "/static/pages/image/tab/recent_h.png"
+      },
+      {
+        "pagePath": "pages/contact/index",
+        "text": "联系人",
+        "iconPath": "/static/pages/image/tab/contact.png",
+        "selectedIconPath": "/static/pages/image/tab/contact_h.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "设置",
+        "iconPath": "/static/pages/image/tab/setting.png",
+        "selectedIconPath": "/static/pages/image/tab/setting_h.png"
+      }
+    ]
+  },
+  "debug": true,
+  "sitemapLocation": "sitemap.json",
+  "globalStyle": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "subPackages": []
+}

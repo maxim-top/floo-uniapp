@@ -1,0 +1,58 @@
+diff -r -u ../../floo-web/src/sdk/manage/sysManage.js ../imsdk/manage/sysManage.js
+--- ../../floo-web/src/sdk/manage/sysManage.js	2021-01-12 15:11:01.000000000 +0800
++++ ../imsdk/manage/sysManage.js	2021-01-12 15:11:02.000000000 +0800
+@@ -207,24 +207,31 @@
+     if (to_id) sendParam.to_id = to_id;
+     io[target](sendParam)
+       .then((res) => {
+-        let param = new FormData();
++        let params = {
++          filePath: file,
++          name: 'file' // must be file, why?
++        };
+         //Oss has this param, ceph not.
+         if (res.oss_body_param && res.oss_body_param.key) {
+-          param.append('OSSAccessKeyId', res.oss_body_param.OSSAccessKeyId);
+-          param.append('policy', res.oss_body_param.policy);
+-          param.append('signature', res.oss_body_param.signature);
+-          param.append('callback', res.oss_body_param.callback);
+-          param.append('key', res.oss_body_param.key);
++          params = Object.assign(params, {
++            formData: {
++              OSSAccessKeyId: res.oss_body_param.OSSAccessKeyId,
++              policy: res.oss_body_param.policy,
++              signature: res.oss_body_param.signature,
++              callback: res.oss_body_param.callback,
++              key: res.oss_body_param.key
++            }
++          });
+         }
+-        param.append('file', file);
+ 
+         let config = {
+-          headers: { 'Content-Type': 'multipart/form-data' }
++          operation: 'upload_file'
+         };
+-
+-        io.asyncFileUpload(res.upload_url, param, config)
++        io.asyncFileUpload(res.upload_url, params, config)
+           .then(() => {
+-            success({ url: res.download_url });
++            success({
++              url: res.download_url
++            });
+           })
+           .catch((err) => {
+             log.error('Fail to upload file due to ', err);
+@@ -242,9 +249,9 @@
+   }
+   if (!avatar) {
+     if (type === 'roster') {
+-      return sdefault || '/image/roster.png';
++      return sdefault || '/static/image/roster.png';
+     } else {
+-      return sdefault || '/image/group.png';
++      return sdefault || '/static/image/group.png';
+     }
+   }
+ 

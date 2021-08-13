@@ -1,0 +1,49 @@
+{
+  "name": "maxim-uniapp",
+  "version": "1.0.0",
+  "description": "maxim uniapp version ..",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-top/maxim-.git"
+  },
+  "author": "Beijing Maximtop Technology Co.,Ltd",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxim-top/maxim-uniapp/issues"
+  },
+  "homepage": "https://github.com/maxim-top/maxim-uniapp#readme",
+  "devDependencies": {
+    "@babel/core": "^7.7.5",
+    "@babel/polyfill": "^7.7.0",
+    "@babel/preset-env": "^7.7.6",
+    "babel-loader": "^8.0.6",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "fsevents": "^2.1.2",
+    "husky": "^4.3.7",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "scripts": {
+    "format": "yarn prettier -w .",
+    "sdk": "webpack --config=webpack.config.js",
+    "release": "yarn sdk && ./floo.sh maxim-uniapp",
+    "package": "cd unpackage/dist/build/ && tar zcvf ../../../maxim-uniapp.tar.gz h5 && cd - "
+  },
+  "dependencies": {
+    "long": "^4.0.0",
+    "protobufjs": "github:ericliang/protobufjs.wechat",
+    "query-string": "^6.12.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "keywords": [
+    "美信拓扑IM",
+    "maxim-uniapp"
+  ]
+}

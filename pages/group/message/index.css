@@ -1,0 +1,87 @@
+/**index.wxss**/
+.msgcontainer {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+}
+
+.msgcontainer .rosterInfo {
+  height: 72rpx;
+  width: 72rpx;
+}
+.msgcontainer .rosterInfo .avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+}
+
+.rosterInfo .username {
+  color: #000;
+  font-size: 28rpx;
+  margin-top: 10rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+  padding-left: 10rpx;
+}
+
+.msgcontainer .c_content {
+  max-width: 400rpx;
+  border-radius: 10rpx;
+  padding: 25rpx 20rpx;
+  line-height: 40rpx;
+  font-size: 30rpx;
+}
+
+.self .rosterInfo {
+  float: right;
+}
+.self .c_content {
+  float: right;
+  background: rgb(155, 200, 255);
+  margin-right: 35rpx;
+}
+
+.roster .rosterInfo {
+  float: left;
+}
+.roster .name_frame {
+  float: left;
+  margin-left: 45rpx;
+  color: rgb(145, 145, 145);
+  font-size: 20rpx;
+  margin-bottom: 5rpx;
+  width: 80%;
+}
+.roster .c_content {
+  float: left;
+  border: 1px solid rgb(240, 240, 240);
+  margin-left: 35rpx;
+}
+
+.c_content .cimage {
+  max-width: 400rpx;
+  max-height: 300rpx;
+}
+.time {
+  font-size: 18rpx;
+  text-align: center;
+  color: #aaa;
+  padding: 20rpx 10rpx;
+}
+.saudio {
+  width: 300rpx;
+  overflow: hidden;
+}
+
+.voice_frmae {
+  overflow: hidden;
+}
+
+.voice_frmae .voice {
+  width: 50rpx;
+  height: 50rpx;
+  float: left;
+}
+.voice_frmae .voice_duration {
+  margin-left: 20rpx;
+}

@@ -1,0 +1,38 @@
+.container {
+  width: 650rpx;
+  margin-left: 50rpx;
+  margin-top: 300rpx;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.3);
+  padding: 0;
+  padding-top: 40rpx;
+}
+
+.info {
+  height: 100rpx;
+  width: 100%;
+}
+.info .avatar {
+  width: 100rpx;
+  height: 100rpx;
+  float: left;
+  margin-left: 30rpx;
+}
+.info .content {
+  margin-left: 160rpx;
+}
+
+.info .nick {
+  font-size: 24rpx;
+  padding-top: 10rpx;
+}
+.info .uid {
+  font-size: 24rpx;
+  padding-top: 10rpx;
+}
+
+.canvas-box {
+  text-align: center;
+  border: none;
+}
