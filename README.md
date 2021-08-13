@@ -5,7 +5,7 @@
 
 本仓库是 IMSDK 的源码仓库，如果你只是开发自己的聊天App，建议使用美信拓扑IM uniapp版仓库[maxim-uniapp](https://github.com/maxim-top/maxim-uniapp)，也可以直接[在线试用](https://chat-h5.maximtop.com)。
 
-[![Scc Count Badge](https://sloc.xyz/github/maxim-top/floo-uniapp/?category=total&avg-wage=1)](https://github.com/maxim-top/floo-uniapp/) [![Scc Count Badge](https://sloc.xyz/github/maxim-top/floo-uniapp/?category=code&avg-wage=1)](https://github.com/maxim-top/floo-uniapp/)
+[![Scc Count Badge](https://sloc.xyz/github/ericliang/floo-uniapp/?category=total&avg-wage=1)](https://github.com/maxim-top/floo-uniapp/) [![Scc Count Badge](https://sloc.xyz/github/ericliang/floo-uniapp/?category=code&avg-wage=1)](https://github.com/maxim-top/floo-uniapp/)
 
 ## 工程说明
 
