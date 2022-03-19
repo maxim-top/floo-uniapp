@@ -122,22 +122,22 @@ export default {
     },
 
     saveAppid(appid) {
-      wx.setStorageSync('maxim_appid', appid);
+      wx.setStorageSync('lanying_im_appid', appid);
     },
     getAppid() {
-      return wx.getStorageSync('maxim_appid') || 'welovemaxim';
+      return wx.getStorageSync('lanying_im_appid') || 'welovemaxim';
     },
 
     saveLoginInfo(info) {
-      wx.setStorageSync('maxim_logininfo', info);
+      wx.setStorageSync('lanying_im_logininfo', info);
     },
 
     getLoginInfo() {
-      return wx.getStorageSync('maxim_logininfo') || {};
+      return wx.getStorageSync('lanying_im_logininfo') || {};
     },
 
     removeLoginInfo() {
-      wx.removeStorageSync('maxim_logininfo');
+      wx.removeStorageSync('lanying_im_logininfo');
     },
 
     imLogout() {

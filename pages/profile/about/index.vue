@@ -20,7 +20,7 @@
         <text>联系商务 400-666-0162</text>
       </view>
       <view class="txtFrame" style="margin-top: 15rpx">
-        <text>美信拓扑IM v1.2.5</text>
+        <text>蓝莺IM v1.2.5</text>
       </view>
     </view>
     <view class="btm">

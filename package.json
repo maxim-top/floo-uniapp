@@ -1,18 +1,18 @@
 {
-  "name": "maxim-uniapp",
+  "name": "lanying-im-uniapp",
   "version": "1.0.0",
-  "description": "maxim uniapp version ..",
+  "description": "lanying-im uniapp version",
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maxim-top/maxim-.git"
+    "url": "git+https://github.com/maxim-top/lanying-im-uniapp.git"
   },
   "author": "Beijing Maximtop Technology Co.,Ltd",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/maxim-top/maxim-uniapp/issues"
+    "url": "https://github.com/maxim-top/lanying-im-uniapp/issues"
   },
-  "homepage": "https://github.com/maxim-top/maxim-uniapp#readme",
+  "homepage": "https://github.com/maxim-top/lanying-im-uniapp#readme",
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/polyfill": "^7.7.0",
@@ -29,8 +29,8 @@
   "scripts": {
     "format": "yarn prettier -w .",
     "sdk": "webpack --config=webpack.config.js",
-    "release": "yarn sdk && ./floo.sh maxim-uniapp",
-    "package": "cd unpackage/dist/build/ && tar zcvf ../../../maxim-uniapp.tar.gz h5 && cd - "
+    "release": "yarn sdk && ./floo.sh lanying-im-uniapp",
+    "package": "cd unpackage/dist/build/ && tar zcvf ../../../lanying-im-uniapp.tar.gz h5 && cd - "
   },
   "dependencies": {
     "long": "^4.0.0",
@@ -43,7 +43,7 @@
     }
   },
   "keywords": [
-    "美信拓扑IM",
-    "maxim-uniapp"
+    "蓝莺IM",
+    "lanying-im-uniapp"
   ]
 }

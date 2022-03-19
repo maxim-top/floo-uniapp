@@ -1,21 +1,21 @@
-## 美信拓扑 IM uniapp 版
+## 蓝莺IM Uniapp 版
 
-[美信拓扑](https://www.maximtop.com/)，一键启用多云架构的即时通讯云服务
+蓝莺IM，是由[美信拓扑](https://www.maximtop.com/)团队研发的新一代即时通讯云服务，SDK设计简单集成方便，服务采用云原生技术和多云架构，私有云也可按月付费。
 
-美信拓扑 IM 为美信拓扑云服务的 DemoApp，方便 App 开发者体验和使用 IM SDK，可以直接[在线试用](https://chat-h5.maximtop.com)，或者在官网[下载页面](https://www.maximtop.com/downloads/)选择试用其他客户端。
+蓝莺IM APP 为方便体验试用蓝莺 IMSDK 的 DemoApp。开发者可直接[在线试用](https://chat-h5.maximtop.com)，也可在官网[下载页面](https://www.maximtop.com/downloads/)选择试用所有客户端。
 
-[![Scc Count Badge](https://sloc.xyz/github/maxim-top/maxim-uniapp/?category=total&avg-wage=1)](https://github.com/maxim-top/maxim-uniapp/) [![Scc Count Badge](https://sloc.xyz/github/maxim-top/maxim-uniapp/?category=code&avg-wage=1)](https://github.com/maxim-top/maxim-uniapp/)
+[![Scc Count Badge](https://sloc.xyz/github/maxim-top/lanying-im-uniapp/?category=total&avg-wage=1)](https://github.com/maxim-top/lanying-im-uniapp/) [![Scc Count Badge](https://sloc.xyz/github/maxim-top/lanying-im-uniapp/?category=code&avg-wage=1)](https://github.com/maxim-top/lanying-im-uniapp/)
 
 ## 工程说明
 
-1. 本工程为 Uniapp 工程，实际上是从[微信小程序](https://github.com/maxim-top/maxim-miniprogram)转换而来，感谢[zhangdaren](https://github.com/zhangdaren/miniprogram-to-uniapp)，转换过程非常顺畅；
+1. 本工程为 Uniapp 工程，实际上是从[微信小程序](https://github.com/maxim-top/lanying-im-miniprogram)转换而来，感谢[zhangdaren](https://github.com/zhangdaren/miniprogram-to-uniapp)，转换过程非常顺畅；
 2. 推荐使用此版本进行小程序/H5 等版本开发，感谢 [DCloud.io](https://dcloud.io) 开发这么好的框架；
 3. DemoApp 是为了演示 IM SDK 调用而开发，也因此最好的开发方式为根据 DemoApp 找到功能，然后直接查看使用示例；
-4. 本工程 DemoApp 不包含所有功能的演示，但是 SDK(floo) 功能完全，高级功能可以参照[PC Web 版本](https://github.com/maxim-top/maxim-web)，SDK 调用方式是通用的。
+4. 本工程 DemoApp 不包含所有功能的演示，但是 SDK(floo) 功能完全，高级功能可以参照[PC Web 版本](https://github.com/maxim-top/lanying-im-web)，SDK 调用方式是通用的。
 
 此工程共有四个源码目录：
 
-1. im 存放美信拓扑 IM SDK，当前最新版本为 floo-2.0.0.uniapp.js
+1. im 存放蓝莺IM SDK，当前最新版本为 floo-2.0.0.uniapp.js
 2. pages 为 UI 源码目录；
 3. utils 为使用的工具类源码；
 4. third 为第三方源码；
@@ -54,3 +54,6 @@ Webstorm 设置可参考[这里](https://www.wenyuanblog.com/blogs/webstorm-esli
 ## 其他
 
 了解更多信息可以阅读[在线文档](https://www.maximtop.com/docs/)，或者在本仓库提问 :)
+
+-- --
+**蓝莺IM 专业SDK，私有云按月付费**

@@ -1,7 +1,7 @@
 {
-  "name": "maxim-uniapp",
+  "name": "lanying-im-uniapp",
   "appid": "__UNI__8E89E17",
-  "description": "maxim uniapp version",
+  "description": "lanying-im uniapp version",
   "versionName": "1.0.0",
   "versionCode": "100",
   "transformPx": false,
@@ -72,7 +72,7 @@
     "usingComponents": true
   },
   "h5": {
-    "title": "美信拓扑IM 一键启用 多云架构",
+    "title": "蓝莺IM 一键启用 多云架构",
     "domain": "chat-h5.maximtop.com"
   }
 }
