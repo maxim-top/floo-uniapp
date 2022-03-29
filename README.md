@@ -32,7 +32,7 @@
 
 1. 修改美信拓扑 AppID
 
-打开文件 App.vue, 修改变量 appid，将 "welovemaxim" 改为你的应用 AppID，此 AppID 为在[美信拓扑后台](https://console.maximtop.com/)创建应用后获取。
+打开文件 App.vue, 修改变量 appid，将 "welovemaxim" 改为你的应用 AppID，此 AppID 为在[蓝莺IM 后台](https://console.maximtop.com/)创建应用后获取。
 
 2. 如果开发小程序，还需修改对应小程序平台的 AppID
 
@@ -74,7 +74,7 @@ Webstorm 设置可参考[这里](https://www.wenyuanblog.com/blogs/webstorm-esli
 
 ## 其他
 
-了解更多信息可以阅读[在线文档](https://www.maximtop.com/docs/)，或者在本仓库提问 :)
+了解更多信息可以阅读[在线文档](https://docs.maximtop.com/quick-start/floo-web-quick-start.html)，或者在本仓库提问 :)
 
 -- --
 **蓝莺IM 专业SDK，私有云按月付费**
