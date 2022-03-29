@@ -32,7 +32,7 @@
 
 1. 修改美信拓扑 AppID
 
-打开文件 App.vue, 修改变量 appid，将 "welovemaxim" 改为你的应用 AppID，此 AppID 为在[蓝莺IM 后台](https://console.maximtop.com/)创建应用后获取。
+打开文件 App.vue, 修改变量 appid，将 "welovemaxim" 改为你的应用 AppID，此 AppID 为在[蓝莺IM 云服务控制台](https://console.maximtop.com/)创建应用后获取。
 
 2. 如果开发小程序，还需修改对应小程序平台的 AppID
 
