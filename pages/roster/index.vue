@@ -180,7 +180,7 @@ export default {
       }
 
       if (j < oldMessages.length) {
-        allMessages = allMessages.concat(oldMessages.slice(i, oldMessages.length));
+        allMessages = allMessages.concat(oldMessages.slice(j, oldMessages.length));
       }
       this.setData({
         messages: [].concat(allMessages)
