@@ -14,7 +14,7 @@
         <text>一键启用多云架构的即时通讯云服务</text>
       </view>
       <view class="txtFrame" style="margin-top: 50rpx">
-        <text>官网 https://www.maximtop.com</text>
+        <text>官网 https://www.lanyingim.com</text>
       </view>
       <view class="txtFrame" style="margin-top: 15rpx">
         <text>联系商务 400-666-0162</text>
@@ -24,7 +24,7 @@
       </view>
     </view>
     <view class="btm">
-      <text>© 2019 美信拓扑</text>
+      <text>© 2022 美信拓扑</text>
     </view>
   </view>
 </template>

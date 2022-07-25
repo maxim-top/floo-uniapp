@@ -1,8 +1,8 @@
-## 蓝莺IM SDK Uniapp 版
+## 蓝莺 IM SDK Uniapp 版
 
-蓝莺IM，是由[美信拓扑](https://www.maximtop.com/)团队研发的新一代即时通讯云服务，SDK设计简单集成方便，服务采用云原生技术和多云架构，私有云也可按月付费。
+蓝莺 IM，是由[美信拓扑](https://www.lanyingim.com/)团队研发的新一代即时通讯云服务，SDK 设计简单集成方便，服务采用云原生技术和多云架构，私有云也可按月付费。
 
-本仓库是 IMSDK 的源码仓库，如果你只是开发自己的聊天App，建议使用蓝莺IM uniapp版仓库 [lanying-im-uniapp](https://github.com/maxim-top/lanying-im-uniapp)，也可以直接[在线试用](https://chat-h5.maximtop.com)。
+本仓库是 IMSDK 的源码仓库，如果你只是开发自己的聊天 App，建议使用蓝莺 IM uniapp 版仓库 [lanying-im-uniapp](https://github.com/maxim-top/lanying-im-uniapp)，也可以直接[在线试用](https://chat-h5.lanyingim.com)。
 
 [![Scc Count Badge](https://sloc.xyz/github/maxim-top/floo-uniapp/?category=total&avg-wage=1)](https://github.com/maxim-top/floo-uniapp/) [![Scc Count Badge](https://sloc.xyz/github/maxim-top/floo-uniapp/?category=code&avg-wage=1)](https://github.com/maxim-top/floo-uniapp/)
 
@@ -15,7 +15,7 @@
 
 此工程共有四个源码目录：
 
-1. im 存放蓝莺IM SDK，当前最新版本为 floo-2.0.0.uniapp.js
+1. im 存放蓝莺 IM SDK，当前最新版本为 floo-2.0.0.uniapp.js
 2. pages 为 UI 源码目录；
 3. utils 为使用的工具类源码；
 4. third 为第三方源码；
@@ -30,9 +30,9 @@
 
 ## 开发自己的应用
 
-1. 修改美信拓扑 AppID
+1. 修改蓝莺 IM AppID
 
-打开文件 App.vue, 修改变量 appid，将 "welovemaxim" 改为你的应用 AppID，此 AppID 为在[蓝莺IM 云服务控制台](https://console.maximtop.com/)创建应用后获取。
+打开文件 App.vue, 修改变量 appid，将 "welovemaxim" 改为你的应用 AppID，此 AppID 为在[蓝莺 IM 云服务控制台](https://console.lanyingim.com/)创建应用后获取。
 
 2. 如果开发小程序，还需修改对应小程序平台的 AppID
 
@@ -74,7 +74,8 @@ Webstorm 设置可参考[这里](https://www.wenyuanblog.com/blogs/webstorm-esli
 
 ## 其他
 
-了解更多信息可以阅读[在线文档](https://docs.maximtop.com/quick-start/floo-web-quick-start.html)，或者在本仓库提问 :)
+了解更多信息可以阅读[在线文档](https://docs.lanyingim.com/quick-start/floo-web-quick-start.html)，或者在本仓库提问 :)
 
--- --
-**蓝莺IM 专业SDK，私有云按月付费**
+---
+
+**蓝莺 IM 专业 SDK，私有云按月付费**

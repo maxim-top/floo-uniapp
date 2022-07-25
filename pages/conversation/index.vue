@@ -1,7 +1,7 @@
 <template>
   <view>
     <snav>
-      <text class="atitle">美信拓扑</text>
+      <text class="atitle">蓝莺IM</text>
     </snav>
     <view class="container" :style="'padding-top:' + navHeight + 'px'">
       <view v-for="(conversation, index) in conversationList" :key="index" @tap="touchConversation" :data-type="conversation.type" :data-sid="conversation.sid" class="item">

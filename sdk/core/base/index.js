@@ -12,7 +12,7 @@ let loginSwap = null;
 let sdkOk = false;
 let isLogin = false;
 
-const webim = function ({ autoLogin = true, dnsServer = 'https://dns.maximtop.com/v2/app_dns', appid = 'welovemaxim', ws = false }) {
+const webim = function ({ autoLogin = true, dnsServer = 'https://dns.lanyingim.com/v2/app_dns', appid = 'welovemaxim', ws = false }) {
   infoStore.saveAppid(appid);
   dnsManager
     .asyncGetDns(dnsServer, appid, ws)
@@ -196,7 +196,7 @@ webim.qrlogin = function (opt) {
 };
 
 webim.tokenLogin = function (user_id, token, public_key) {
-  console.log('webim.tokenLogin', user_id, token);
+  console.log('webim.tokenLogin', user_id);
   if (!sdkOk) {
     loginSwap = {
       type: 'tokenLogin',
