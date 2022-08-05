@@ -23,6 +23,9 @@ const connectTimeout = () => {
 const CONNECT_DELAY_MAX = 10000;
 const CONNECT_DELAY_MIN = 1000;
 const connectDelayTime = () => {
+  if (connectTimes == 1) {
+    return 0;
+  }
   return Math.floor(Math.random() * (CONNECT_DELAY_MAX - CONNECT_DELAY_MIN)) + CONNECT_DELAY_MIN;
 };
 
@@ -166,7 +169,7 @@ const sendMessage = (msg) => {
       log.error('=============== fail to send message, err: ', errMsg);
       socket.close();
 
-      fire('reconnect', { reason: 'SendFail' });
+      //fire('reconnect', { reason: 'SendFail' });
     }
   });
 };
