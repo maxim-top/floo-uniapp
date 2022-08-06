@@ -30,6 +30,7 @@ const connectDelayTime = () => {
 };
 
 let socket = null;
+let socketVersion = 0;
 
 const startHeartbeat = () => {
   heartTimer && clearInterval(heartTimer);
@@ -61,10 +62,10 @@ bind('userKicked', () => {
   userStatus = 'kick';
 });
 
-bind('reconnect', ({ reason }) => {
+bind('reconnect', ({ reason, forSocketVersion }) => {
   log.warn('socket reconnect due to ', reason, ' user status: ', userStatus);
   if (userStatus === 'normal') {
-    reconnectWithTimesCheck();
+    reconnectWithTimesCheck(forSocketVersion);
   }
 });
 
@@ -73,10 +74,13 @@ const connect = function (c) {
   config = c;
   connectTimes = 0;
   userStatus = 'normal';
-  socket_connect();
+  socket_connect(socketVersion);
 };
 
-const socket_connect = () => {
+const socket_connect = (forSocketVersion) => {
+  if (forSocketVersion != socketVersion) {
+    return;
+  }
   const { fireplace } = config;
   log.log('................................. will connect : ', fireplace);
   fire('flooNotice', {
@@ -84,6 +88,7 @@ const socket_connect = () => {
     desc: 'socket connecting...'
   });
 
+  socketVersion++;
   socket = wx.connectSocket({
     url: fireplace,
     tcpNoDelay: true,
@@ -94,7 +99,7 @@ const socket_connect = () => {
     },
     fail: (err) => {
       log.error('================= Failed to connect ', fireplace, ' error: ', err);
-      fire('reconnect', { reason: 'ConnectFail' });
+      fire('reconnect', { reason: 'ConnectFail', forSocketVersion: socketVersion });
     }
   });
 
@@ -114,11 +119,11 @@ const socket_connect = () => {
 
   socket.onClose((res) => {
     log.error('=================  socket disconnected due to ', res);
-    fire('reconnect', { reason: 'closed_by_peer' });
+    fire('reconnect', { reason: 'closed_by_peer', forSocketVersion: socketVersion });
   });
 };
 
-const reconnectWithTimesCheck = () => {
+const reconnectWithTimesCheck = (forSocketVersion) => {
   //check if we've tried too many times on one server
   if (connectTimes >= maxConnectTimes) {
     connectTimes = 0;
@@ -126,14 +131,14 @@ const reconnectWithTimesCheck = () => {
   } else {
     connectTimes++;
   }
-  reconnect();
+  reconnect(forSocketVersion);
 };
 
-const reconnect = () => {
+const reconnect = (forSocketVersion) => {
   const delay = connectDelayTime();
   log.error('================= socket will reconnect in ', delay, ' ms (', connectTimes, ')');
   setTimeout(() => {
-    socket_connect();
+    socket_connect(forSocketVersion);
   }, delay);
 };
 
@@ -169,7 +174,7 @@ const sendMessage = (msg) => {
       log.error('=============== fail to send message, err: ', errMsg);
       socket.close();
 
-      //fire('reconnect', { reason: 'SendFail' });
+      fire('reconnect', { reason: 'SendFail', forSocketVersion: socketVersion });
     }
   });
 };
