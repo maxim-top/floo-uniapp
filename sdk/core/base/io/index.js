@@ -22,8 +22,11 @@ const connectTimeout = () => {
 
 const CONNECT_DELAY_MAX = 10000;
 const CONNECT_DELAY_MIN = 1000;
-const connectDelayTime = () => {
+const connectDelayTime = (reason) => {
   if (connectTimes == 1) {
+    return 0;
+  }
+  if ('SendFail' == reason) {
     return 0;
   }
   return Math.floor(Math.random() * (CONNECT_DELAY_MAX - CONNECT_DELAY_MIN)) + CONNECT_DELAY_MIN;
@@ -65,7 +68,7 @@ bind('userKicked', () => {
 bind('reconnect', ({ reason, forSocketVersion }) => {
   log.warn('socket reconnect due to ', reason, ' user status: ', userStatus);
   if (userStatus === 'normal') {
-    reconnectWithTimesCheck(forSocketVersion);
+    reconnectWithTimesCheck(forSocketVersion, reason);
   }
 });
 
@@ -123,7 +126,7 @@ const socket_connect = (forSocketVersion) => {
   });
 };
 
-const reconnectWithTimesCheck = (forSocketVersion) => {
+const reconnectWithTimesCheck = (forSocketVersion, reason) => {
   //check if we've tried too many times on one server
   if (connectTimes >= maxConnectTimes) {
     connectTimes = 0;
@@ -131,11 +134,11 @@ const reconnectWithTimesCheck = (forSocketVersion) => {
   } else {
     connectTimes++;
   }
-  reconnect(forSocketVersion);
+  reconnect(forSocketVersion, reason);
 };
 
-const reconnect = (forSocketVersion) => {
-  const delay = connectDelayTime();
+const reconnect = (forSocketVersion, reason) => {
+  const delay = connectDelayTime(reason);
   log.error('================= socket will reconnect in ', delay, ' ms (', connectTimes, ')');
   setTimeout(() => {
     socket_connect(forSocketVersion);
