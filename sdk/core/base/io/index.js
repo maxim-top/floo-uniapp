@@ -12,7 +12,10 @@ const maxConnectTimes = 5;
 let connectTimes = 0;
 let heartTimer = null;
 const unreadDelayTime = 50000;
+const unreadTimeoutTime = 20000;
 let userStatus = 'normal'; // normal, kick , logout
+let lastFrameRecvTime = 0;
+const sendFailReconnectDelay = 200;
 
 const CONNECT_TIMEOUT_MIN = 10000;
 const CONNECT_TIMEOUT_STEP = 20000;
@@ -26,7 +29,7 @@ const connectDelayTime = (reason) => {
   if (connectTimes == 1) {
     return 0;
   }
-  if ('SendFail' == reason) {
+  if ('SendFail' == reason || 'UnreadTimeout' == reason) {
     return 0;
   }
   return Math.floor(Math.random() * (CONNECT_DELAY_MAX - CONNECT_DELAY_MIN)) + CONNECT_DELAY_MIN;
@@ -38,8 +41,28 @@ let socketVersion = 0;
 const startHeartbeat = () => {
   heartTimer && clearInterval(heartTimer);
   heartTimer = setInterval(() => {
+    startHeartbeatTimeoutCheck();
     sendMessage(makeUnreadULTimer());
   }, unreadDelayTime);
+};
+
+const startHeartbeatTimeoutCheck = () => {
+  let startTime = new Date().getTime();
+  let delay = unreadTimeoutTime;
+  let nowSocketVersion = socketVersion;
+  setTimeout(() => {
+    if (socketVersion == nowSocketVersion) {
+      if (lastFrameRecvTime < startTime) {
+        log.error('=============== fail to receive unread in ', delay, ' ms');
+        try {
+          socket.close();
+        } catch (ex) {}
+        setTimeout(() => {
+          fire('reconnect', { reason: 'UnreadTimeout', forSocketVersion: nowSocketVersion });
+        }, sendFailReconnectDelay);
+      }
+    }
+  }, delay);
 };
 
 // event handlers
@@ -155,6 +178,7 @@ const startProvision = () => {
 };
 
 const onFrame = (bytes) => {
+  lastFrameRecvTime = new Date().getTime();
   const msg = unpack(bytes);
   log.info('RECV :' + JSON.stringify(formatJson(msg)));
   receiveMessage(msg);
@@ -175,9 +199,13 @@ const sendMessage = (msg) => {
       const { errMsg } = err;
 
       log.error('=============== fail to send message, err: ', errMsg);
-      socket.close();
-
-      fire('reconnect', { reason: 'SendFail', forSocketVersion: socketVersion });
+      try {
+        socket.close();
+      } catch (ex) {}
+      let nowSocketVersion = socketVersion;
+      setTimeout(() => {
+        fire('reconnect', { reason: 'SendFail', forSocketVersion: nowSocketVersion });
+      }, sendFailReconnectDelay);
     }
   });
 };
