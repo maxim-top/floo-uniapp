@@ -12,7 +12,8 @@ let loginSwap = null;
 let sdkOk = false;
 let isLogin = false;
 
-const webim = function ({ autoLogin = true, dnsServer = 'https://dns.lanyingim.com/v2/app_dns', appid = 'welovemaxim', ws = false }) {
+const webim = function ({ autoLogin = true, dnsServer = 'https://dns.lanyingim.com/v2/app_dns', appid = 'welovemaxim', ws = false, logLevel = 'debug' }) {
+  log.setLogLevel(logLevel);
   infoStore.saveAppid(appid);
   dnsManager
     .asyncGetDns(dnsServer, appid, ws)
