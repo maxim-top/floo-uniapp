@@ -9,7 +9,7 @@
           <text>群组</text>
         </view>
         <view v-if="showsupports" data-num="2" :class="'tag ' + (menuCurr == 2 ? 'sel' : '')" @tap.stop="menuClick">
-          <text>支持</text>
+          <text>客服</text>
         </view>
       </view>
     </snav>
@@ -22,7 +22,15 @@
         <image src="/static/pages/image/cgroup.png" class="avatar"></image>
         <text class="uname">创建群组</text>
       </view>
-      <view v-for="(item, index) in rosterList" :key="index" v-if="menuCurr == 0" :data-uid="item.user_id" :data-nick="item.nick_name || item.username || item.user_id" class="item" @tap="goChat">
+      <view
+        v-for="(item, index) in rosterList"
+        :key="index"
+        v-if="menuCurr == 0"
+        :data-uid="item.user_id"
+        :data-nick="item.nick_name || item.username || item.user_id"
+        class="item"
+        @tap="goChat"
+      >
         <image :src="item.avatar" class="avatar"></image>
         <text class="uname">{{ item.nick_name || item.username || item.user_id }}</text>
       </view>
@@ -76,7 +84,7 @@ export default {
     this.getRosterList();
     this.getGroupList();
     const showsupports = getApp().getAppid() == 'welovemaxim';
-    if( showsupports ) {
+    if (showsupports) {
       this.asyncGetStatics();
     }
 
@@ -118,7 +126,7 @@ export default {
           im.rosterManage.asnycGetRosterListDetailByIds(res).then(() => {
             const allMaps = im.rosterManage.getAllRosterDetail() || {};
             const retObj = res.map((i) => {
-              const rosterInfo = allMaps[i] || {user_id:i};
+              const rosterInfo = allMaps[i] || { user_id: i };
               const unreadCount = im.rosterManage.getUnreadCount(i);
               let avatar = rosterInfo.avatar;
               avatar = im.sysManage.getImage({
