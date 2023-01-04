@@ -330,6 +330,10 @@ webim.isReady = function () {
   return sdkOk;
 };
 
+webim.setLogLevel = function (logLevel) {
+  log.setLogLevel(logLevel);
+};
+
 webim.disConnect = io.disConnect;
 
 export default webim;

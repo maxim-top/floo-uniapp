@@ -89,7 +89,7 @@ export default {
       const dnsServer = this.globalData.dnsServer;
       const ws = this.globalData.ws;
       const autoLogin = this.globalData.autoLogin;
-      const logLevel = 'debug'; // debug|info|warn|error|off
+      const logLevel = process.env.NODE_ENV === 'production' ? 'off' : 'debug'; // debug|info|warn|error|off
       console.log('Init flooim for ', appid);
       const config = {
         autoLogin,
