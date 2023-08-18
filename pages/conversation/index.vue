@@ -4,6 +4,12 @@
       <text class="atitle">蓝莺IM</text>
     </snav>
     <view class="container" :style="'padding-top:' + navHeight + 'px'">
+      <view v-if="!isLogin">
+        <text>请先登录并添加联系人</text>
+      </view>
+      <view v-if="isLogin && conversationList.length === 0">
+        <text>请先添加联系人</text>
+      </view>
       <view v-for="(conversation, index) in conversationList" :key="index" @tap="touchConversation" :data-type="conversation.type" :data-sid="conversation.sid" class="item">
         <view v-if="conversation.unread != 0" class="unread_number">
           <text>{{ conversation.unread }}</text>
@@ -35,6 +41,7 @@ export default {
     return {
       conversationList: [],
       navHeight: 0,
+      isLogin: false,
       system_avatar: {
         name: '系统通知',
         avatar: '/static/pages/image/tab/setting.png'
@@ -46,12 +53,18 @@ export default {
   props: {},
   onShow: function () {
     const token = getApp().getIM().userManage.getToken();
+    const isLogin = getApp().isIMLogin();
+
+    this.setData({
+      isLogin
+    });
 
     if (!token) {
       if (getApp().isLoginPage === false) {
         getApp().isLoginPage = true;
-        wx.reLaunch({
-          url: '../login/index'
+        const isWeChat = getApp().isWeChatEnvironment();
+        uni.reLaunch({
+          url: isWeChat ? '../profile/index' : '../login/index'
         });
       }
     } else {

@@ -1,6 +1,5 @@
 /**index.wxss**/
 .container {
-  display: block;
   padding: 0rpx 30rpx;
   background: #fefefe;
 }
@@ -8,11 +7,11 @@
 .inputer {
   height: 100rpx;
   width: 750rpx;
-  position: fixed;
   bottom: 20rpx;
-  left: 5rpx;
+  left: 0rpx;
   border-top: 1rpx solid #ccc;
   background: white;
+  display: flex;
 }
 .inputer .voice {
   height: 60rpx;
@@ -23,23 +22,58 @@
 }
 .inputer .input {
   margin: 8rpx 20rpx 10rpx 20rpx;
-  width: 650rpx;
+  width: 550rpx;
   height: 80rpx;
-  margin-left: 80rpx;
   border: 1px solid #ddd;
   border-radius: 8rpx;
   font-size: 30rpx;
   text-indent: 15rpx;
+  display: inline-block;
 }
-
 .inputer .recorder {
   margin: 8rpx 20rpx 10rpx 20rpx;
-  width: 650rpx;
+  width: 550rpx;
   height: 80rpx;
+  border: 1px solid white;
+  border-radius: 8rpx;
   text-align: center;
   font-size: 36rpx;
-  margin-left: 80rpx;
   line-height: 80rpx;
+  display: inline-block;
+}
+.inputer .plus {
+  height: 60rpx;
+  width: 60rpx;
+  margin: 10rpx;
+  margin-top: 20rpx;
+}
+
+.toolbar {
+  height: 180rpx;
+  width: 750rpx;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.toolbar .toolbar_item {
+  height: 160rpx;
+  width: 160rpx;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.toolbar .toolbar_item .icon {
+  margin-top: 100rpx;
+  height: 60rpx;
+  width: 60rpx;
+  margin: 0 auto;
+}
+
+.toolbar .toolbar_item .text {
+  position: relative;
+  top: 20rpx;
 }
 
 .back {

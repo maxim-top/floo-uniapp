@@ -1,10 +1,11 @@
 import log from '../log';
 import { metaToCustomer, numToString, toLong, toNumber } from '../tools';
 import recentStore from './recentStore';
-import { getItem, removeAllItems, removeItem, saveItem } from './storeBase';
-import { STATIC_MESSAGE_TYPE, STATIC_MESSAGE_OPTYPE, STATIC_MESSAGE_STATUS } from '../../utils/static';
+import { getItem, removeAllItems, saveItem, removeItem } from './storeBase';
+import { STATIC_MESSAGE_STATUS, STATIC_MESSAGE_OPTYPE, STATIC_MESSAGE_TYPE } from '../../utils/static';
 import { fire } from '../cusEvent';
 import infoStore from './infoStore';
+
 const max_message_count = 100;
 
 const isAutoSent = (meta) => {
@@ -70,9 +71,9 @@ const messageStore = {
     const allMsg = getItem('key_roster_sending_message') || [];
 
     if (!server_mid) {
-      //一般来说，目前只遇到过，deviceSN跟provision返回的不一致，导致这个。
-      log.log('===================== there is something error:==============');
-      log.log(syncMb);
+      // Assume reason is "client msg id duplicated"
+      log.log('failed to send message due to: ', syncMb.status.reason);
+
       //需要删除临存储的消息
       const index = allMsg.findIndex((item) => toNumber(item.id) === toNumber(client_mid));
       if (index > -1) {
@@ -106,12 +107,12 @@ const messageStore = {
   },
 
   saveRosterMessage: (meta) => {
-    // to is self..
     const { from, to, type } = meta;
     if (type == 'command' || type == 'forward') {
       //commond message，没法做处理
       return;
     }
+
     const fromUid = toNumber(from);
     const uid = toNumber(infoStore.getUid());
     const toUid = toNumber(to);
@@ -281,6 +282,7 @@ const messageStore = {
       saveItem('key_group_message_store', allGroupMessageMap, true, gid);
     }
   },
+
   /**
    * unread ...
    */
@@ -289,10 +291,13 @@ const messageStore = {
     let ret = 0;
     const uid = infoStore.getUid();
     messages.forEach((message) => {
-      const { from, status } = message;
+      const { from, status, type, config } = message;
       const fromUid = toNumber(from);
-      if (fromUid > 0 && fromUid !== uid && status != STATIC_MESSAGE_STATUS.READ) {
+      if (fromUid > 0 && fromUid !== uid && status !== STATIC_MESSAGE_STATUS.READ) {
         ret++;
+        if (type === 'rtc' && config && config.action && config.action !== 'hangup') {
+          ret--;
+        }
       }
     });
     return ret;
@@ -305,7 +310,7 @@ const messageStore = {
     messages.forEach((message) => {
       const { from, status } = message;
       const fromUid = toNumber(from);
-      if (fromUid > 0 && fromUid !== uid && status != STATIC_MESSAGE_STATUS.READ) {
+      if (fromUid > 0 && fromUid !== uid && status !== STATIC_MESSAGE_STATUS.READ) {
         ret++;
       }
     });
@@ -347,6 +352,7 @@ const messageStore = {
     removeAllItems('key_group_message_store');
     removeItem('key_group_sending_message');
     removeItem('key_roster_sending_message');
+    removeAllItems('key_rtc_message_store');
   }
 };
 

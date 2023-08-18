@@ -1,6 +1,10 @@
 {
   "pages": [
     {
+      "path": "pages/profile/index",
+      "style": {}
+    },
+    {
       "path": "pages/account/login/index",
       "style": {}
     },
@@ -57,10 +61,6 @@
       "style": {}
     },
     {
-      "path": "pages/profile/index",
-      "style": {}
-    },
-    {
       "path": "pages/contact/index",
       "style": {}
     },
@@ -79,6 +79,12 @@
     {
       "path": "pages/work/sign/index",
       "style": {}
+    },
+    {
+      "path": "pages/components/loginreminder/index",
+      "style": {
+        "component": true
+      }
     },
     {
       "path": "pages/components/prompt/index",

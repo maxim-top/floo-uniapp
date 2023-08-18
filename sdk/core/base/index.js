@@ -48,7 +48,8 @@ const webim = function ({ autoLogin = true, dnsServer = 'https://dns.lanyingim.c
         isLogin = true;
         const user_id = infoStore.getUid();
         const token = infoStore.getToken();
-        if (user_id && token) {
+        const tokenAppId = infoStore.getTokenAppId();
+        if (user_id && token && tokenAppId == appid) {
           const rosterRequest = rosterManage.asyncGetRosterIdList(true);
           const groupRequet = groupManage.asyncGetJoinedGroups(true);
           Promise.all([rosterRequest, groupRequet])
@@ -99,6 +100,7 @@ webim.login = function (opt) {
       const { token, user_id, public_key } = res;
       infoStore.saveUid(user_id);
       infoStore.saveToken(token);
+      infoStore.saveTokenAppId(infoStore.getAppid());
       infoStore.saveAesKey(public_key);
       const rosterRequest = rosterManage.asyncGetRosterIdList(true);
       const groupRequet = groupManage.asyncGetJoinedGroups(true);
@@ -156,6 +158,7 @@ webim.qrlogin = function (opt) {
       const { token, user_id, public_key } = res;
       infoStore.saveUid(user_id);
       infoStore.saveToken(token);
+      infoStore.saveTokenAppId(infoStore.getAppid());
       infoStore.saveAesKey(public_key);
       const rosterRequest = rosterManage.asyncGetRosterIdList(true);
       const groupRequet = groupManage.asyncGetJoinedGroups(true);
@@ -209,6 +212,7 @@ webim.tokenLogin = function (user_id, token, public_key) {
 
   infoStore.saveUid(user_id);
   infoStore.saveToken(token);
+  infoStore.saveTokenAppId(infoStore.getAppid());
   infoStore.saveAesKey(public_key);
   const rosterRequest = rosterManage.asyncGetRosterIdList(true);
   const groupRequet = groupManage.asyncGetJoinedGroups(true);
@@ -252,6 +256,7 @@ webim.idLogin = function (opt) {
       const { token, user_id, public_key } = res;
       infoStore.saveUid(user_id);
       infoStore.saveToken(token);
+      infoStore.saveTokenAppId(infoStore.getAppid());
       infoStore.saveAesKey(public_key);
       const rosterRequest = rosterManage.asyncGetRosterIdList(true);
       const groupRequet = groupManage.asyncGetJoinedGroups(true);
@@ -296,7 +301,7 @@ webim.cleanup = function () {
 };
 
 webim.isLogin = function () {
-  return isLogin && infoStore.getUid() && infoStore.getToken();
+  return isLogin && infoStore.getUid() && infoStore.getToken() && infoStore.getAppid() == infoStore.getTokenAppId();
 };
 
 webim.on = webim.listen = function (options, ext) {

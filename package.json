@@ -1,6 +1,6 @@
 {
   "name": "lanying-im-uniapp",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "lanying-im uniapp version",
   "main": "app.js",
   "repository": {
@@ -35,7 +35,10 @@
   "dependencies": {
     "long": "^4.0.0",
     "protobufjs": "github:ericliang/protobufjs.wechat",
-    "query-string": "^6.12.1"
+    "query-string": "^6.12.1",
+    "webrtc-adapter": "^8.1.2",
+    "jquery": "3.6.1",
+    "json-bigint": "1.0.0"
   },
   "husky": {
     "hooks": {

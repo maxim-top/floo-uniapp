@@ -8,7 +8,7 @@
       <view class="delete_button" @click="deleteConversation()">删除会话</view>
     </snav>
     <view class="container" :style="'padding-top:' + navHeight + 'px'">
-      <scroll-view class="contentcontainer" :style="'height:' + wh + 'px'" scroll-y :scroll-top="scrolltop">
+      <scroll-view class="contentcontainer" :style="'height:' + wh + 'px'" scroll-y :scroll-top="scrolltop" @tap="hidenToolBarHandler">
         <block v-for="(message, index) in messages" :key="index">
           <message :message="message"></message>
         </block>
@@ -28,7 +28,40 @@
         <view v-else class="recorder" @touchstart="startRecord" @touchend="stopRecord">
           <text>{{ recordTxt }}</text>
         </view>
+        <image class="plus" src="/static/pages/image/more.png" @tap="showToolBarHandler"></image>
       </view>
+    </view>
+    <view v-if="showToolBar" class="toolbar">
+      <view class="toolbar_item" @tap="selectPictureHandler">
+        <image class="icon" src="/static/pages/image/toolbar/picture.png"></image>
+        <text class="text">照片</text>
+      </view>
+      <view class="toolbar_item" @tap="selectTakePhotoHandler">
+        <image class="icon" src="/static/pages/image/toolbar/camera.png"></image>
+        <text class="text">拍照</text>
+      </view>
+      <view class="toolbar_item" @tap="selectLocationHandler">
+        <image class="icon" src="/static/pages/image/toolbar/loc.png"></image>
+        <text class="text">位置</text>
+      </view>
+      <view class="toolbar_item" @tap="selectFileHandler">
+        <image class="icon" src="/static/pages/image/toolbar/file.png"></image>
+        <text class="text">文件</text>
+      </view>
+      <view v-if="!isWeChat" class="toolbar_item" @tap="selectTakeVideoHandler">
+        <image class="icon" src="/static/pages/image/toolbar/video.png"></image>
+        <text class="text">小视频</text>
+      </view>
+      <view class="toolbar_item">
+        <image class="icon" src="/static/pages/image/toolbar/video_call.png"></image>
+        <text class="text">视频通话</text>
+      </view>
+      <view class="toolbar_item">
+        <image class="icon" src="/static/pages/image/toolbar/audio_call.png"></image>
+        <text class="text">语音通话</text>
+      </view>
+      <view class="toolbar_item"></view>
+      <view v-if="isWeChat" class="toolbar_item"></view>
     </view>
   </view>
 </template>
@@ -52,11 +85,13 @@ export default {
       wh: 0,
       navHeight: 0,
       showvoice: false,
+      showToolBar: false,
       recordTxt: '按下录音',
       startTime: 0,
       duration: 0,
       timer: null,
-      recordFile: ''
+      recordFile: '',
+      isWeChat: false
     };
   },
 
@@ -119,7 +154,13 @@ export default {
     this.setData({
       stitle: nick || fromUserObj.nick_name || fromUserObj.username || fromUserObj.user_id
     });
-    const wh = wx.getSystemInfoSync().windowHeight - this.navHeight - 70;
+    const wh = uni.getSystemInfoSync().windowHeight - this.navHeight - 70;
+    const host = uni.getSystemInfoSync().host;
+    if (host && host.env && host.env === 'WeChat') {
+      this.setData({
+        isWeChat: true
+      });
+    }
     this.setData({
       wh
     });
@@ -147,7 +188,7 @@ export default {
         j = 0;
       while (i < newMessages.length && j < oldMessages.length) {
         const newMeta = newMessages[i];
-        if (newMeta.ext && newMeta.ext.input_status) {
+        if (this.checkTyping(newMeta)) {
           i++;
           continue;
         }
@@ -218,10 +259,14 @@ export default {
     },
 
     checkTyping(message) {
-      const { ext = {} } = message;
+      const { ext } = message;
 
-      if (typeof ext.input_status !== 'undefined') {
-        let status = ext.input_status;
+      let s = {};
+      try {
+        s = JSON.parse(ext);
+      } catch (ex) {}
+      if (typeof s.input_status !== 'undefined') {
+        let status = s.input_status;
 
         if (status == 'nothing') {
           // this.header.querySelector(".typing").style.display = "none";
@@ -291,14 +336,156 @@ export default {
       this.backClick();
     },
 
+    hidenToolBarHandler() {
+      this.setData({
+        wh: this.showToolBar ? this.wh + 180 : this.wh,
+        showToolBar: false
+      });
+    },
+
     voiceHandler() {
       this.setData({
-        showvoice: !this.showvoice
+        showvoice: !this.showvoice,
+        wh: this.showToolBar ? this.wh + 180 : this.wh,
+        showToolBar: false
+      });
+    },
+
+    showToolBarHandler() {
+      this.setData({
+        showToolBar: !this.showToolBar,
+        showvoice: !this.showvoice,
+        wh: this.showToolBar ? this.wh + 180 : this.wh - 180
+      });
+    },
+
+    selectPictureHandler() {
+      const that = this;
+      let func = this.isWeChat ? uni.chooseMedia : uni.chooseImage;
+      func({
+        count: 9, //默认9
+        mediaType: ['mix'],
+        sourceType: ['album'],
+        sizeType: ['original', 'compressed'],
+        success(res) {
+          const files = res.tempFiles;
+          files.forEach((element) => {
+            that.fileChangeHandler(element, element.fileType ? element.fileType : 'image');
+          });
+        }
+      });
+    },
+
+    selectTakePhotoHandler() {
+      const that = this;
+      let func = this.isWeChat ? uni.chooseMedia : uni.chooseImage;
+      func({
+        count: 1,
+        mediaType: ['mix'],
+        sourceType: ['camera'],
+        sizeType: ['original', 'compressed'],
+        camera: 'back',
+        success(res) {
+          const file = res.tempFiles[0];
+          that.fileChangeHandler(file, file.fileType ? file.fileType : 'image');
+        }
+      });
+    },
+
+    selectTakeVideoHandler() {
+      const that = this;
+      let func = this.isWeChat ? uni.chooseMedia : uni.chooseVideo;
+      func({
+        count: 1,
+        mediaType: ['video'],
+        sourceType: ['camera'],
+        camera: 'back',
+        success(res) {
+          if (that.isWeChat) {
+            const file = res.tempFiles[0];
+            that.fileChangeHandler(file, 'video');
+          } else {
+            that.fileChangeHandler(res, 'video');
+          }
+        }
+      });
+    },
+
+    selectLocationHandler() {
+      const that = this;
+      uni.getLocation({
+        type: 'wgs84',
+        success(res) {
+          const im = getApp().getIM();
+          im.sysManage.sendRosterMessage({
+            uid: that.uid,
+            type: 'location',
+            content: '',
+            attachment: {
+              lat: res.latitude,
+              lon: res.longitude,
+              addr: '当前位置经度:' + res.longitude + ',纬度 :' + res.latitude
+            }
+          });
+        }
+      });
+    },
+
+    selectFileHandler() {
+      const that = this;
+      let func = this.isWeChat ? uni.chooseMessageFile : uni.chooseFile;
+      func({
+        count: 1,
+        extension: ['.*'],
+        success(res) {
+          const file = res.tempFiles[0];
+          that.fileChangeHandler(file, 'file');
+        }
+      });
+    },
+
+    fileChangeHandler(file, type) {
+      const that = this;
+      const im = getApp().getIM();
+      im.sysManage
+        .asyncFileUpload({
+          file: file.tempFilePath ? file.tempFilePath : file.path,
+          to_id: this.uid,
+          fileType: type,
+          toType: 'chat',
+          chatType: 'roster'
+        })
+        .then((res) => {
+          console.log('文件操作上传成功');
+          that.sendFileMessage(file, type, res.url);
+        })
+        .catch((err) => {
+          console.log('文件发送失败：' + err);
+        });
+    },
+
+    sendFileMessage(file, type, url) {
+      const im = getApp().getIM();
+      const fileInfo = {
+        dName: file.name ? file.name : 'file',
+        fLen: file.size,
+        url,
+        width: file.width ? file.width : 0,
+        height: file.height ? file.height : 0
+      };
+      if (type === 'video') {
+        fileInfo.tUrl = url + '&image_type=3';
+      }
+      im.sysManage.sendRosterMessage({
+        type: type,
+        uid: this.uid,
+        content: '',
+        attachment: fileInfo
       });
     },
 
     startRecord() {
-      wx.authorize({
+      uni.authorize({
         scope: 'scope.record',
         success: function () {
           console.log('录音授权成功');
@@ -308,7 +495,7 @@ export default {
         }
       });
       var that = this;
-      const recorderManager = wx.getRecorderManager();
+      const recorderManager = uni.getRecorderManager();
       recorderManager.onError((res) => {
         console.log('录音错误: ', res);
       });
@@ -347,7 +534,7 @@ export default {
         });
       }
 
-      const recorderManager = wx.getRecorderManager();
+      const recorderManager = uni.getRecorderManager();
       recorderManager.stop();
       this.setData({
         recordTxt: '按下录音'

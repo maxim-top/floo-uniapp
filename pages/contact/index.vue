@@ -1,5 +1,6 @@
 <template>
   <view>
+    <loginreminder ref="loginPrompt"></loginreminder>
     <snav>
       <view class="aheader">
         <view data-num="0" :class="'tag ' + (menuCurr == 0 ? 'sel' : '')" @tap.stop="menuClick">
@@ -57,7 +58,8 @@ export default {
       showGroup: true,
       menuCurr: 0,
       navHeight: 0,
-      showsupports: false
+      showsupports: false,
+      isLogin: false
     };
   },
 
@@ -81,8 +83,15 @@ export default {
       });
     }
 
-    this.getRosterList();
-    this.getGroupList();
+    const isLogin = getApp().isIMLogin();
+    this.setData({
+      isLogin
+    });
+
+    if (isLogin) {
+      this.getRosterList();
+      this.getGroupList();
+    }
     const showsupports = getApp().getAppid() == 'welovemaxim';
     if (showsupports) {
       this.asyncGetStatics();
@@ -95,9 +104,12 @@ export default {
   onShow: function () {
     if (!getApp().isIMLogin()) {
       getApp().isLoginPage = true;
-      wx.reLaunch({
-        url: '../login/index'
-      });
+      const isWeChat = getApp().isWeChatEnvironment();
+      if (!isWeChat) {
+        uni.reLaunch({
+          url: '../login/index'
+        });
+      }
     }
   },
   methods: {
@@ -201,14 +213,22 @@ export default {
       });
     },
     addRoster: function () {
-      wx.navigateTo({
-        url: '../roster/add/index'
-      });
+      if (this.isLogin) {
+        uni.navigateTo({
+          url: '../roster/add/index'
+        });
+      } else {
+        this.$refs.loginPrompt.show();
+      }
     },
     createGroup: function () {
-      wx.navigateTo({
-        url: '../group/create/index'
-      });
+      if (this.isLogin) {
+        uni.navigateTo({
+          url: '../group/create/index'
+        });
+      } else {
+        this.$refs.loginPrompt.show();
+      }
     }
   }
 };

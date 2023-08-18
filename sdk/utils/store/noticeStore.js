@@ -1,4 +1,4 @@
-import { getItem, saveItem } from './storeBase';
+import { getItem } from './storeBase';
 
 const noticeStore = {
   saveNotice: (/*meta*/) => {

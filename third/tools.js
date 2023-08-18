@@ -1,6 +1,6 @@
 import Long from 'long';
 
-const formatJson = (obj) => {
+const formatJson = (obj = 0) => {
   const isLong = obj instanceof Long;
 
   if (isLong) {
@@ -29,7 +29,7 @@ const formatJson = (obj) => {
   return hashRet;
 };
 
-const transferToLong = (obj) => {
+const transferToLong = (obj = 0) => {
   const { low, high } = obj;
 
   if (typeof low !== 'undefined' && typeof high !== 'undefined') {
@@ -75,7 +75,7 @@ const toNumber = (obj = 0) => {
   }
 };
 
-const toLong = (obj) => {
+const toLong = (obj = 0) => {
   if (typeof obj === 'string') return Long.fromString(obj);
   const { low, high, unsigned = true } = obj;
 
@@ -90,7 +90,7 @@ const toLong = (obj) => {
   return new Long();
 };
 
-const numToString = (obj) => {
+const numToString = (obj = 0) => {
   if (typeof obj === 'undefined') {
     ('');
   }

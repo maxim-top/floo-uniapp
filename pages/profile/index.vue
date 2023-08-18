@@ -1,13 +1,22 @@
 <template>
   <view>
+    <loginreminder ref="loginPrompt"></loginreminder>
     <view class="header_view" :style="'padding-top:' + navHeight + 'px'">
-      <image :src="profile.avatar" class="avatar" @tap="changeAvatar"></image>
-      <view class="nick">
-        <text>{{ profile.nick_name || profile.username }}</text>
-        <image class="qrcode" src="../../static/pages/image/qrcode.jpg" @tap="goQrcode"></image>
+      <view v-if="isLogin">
+        <image :src="profile.avatar" class="avatar" @tap="changeAvatar"></image>
+        <view class="nick">
+          <text>{{ profile.nick_name || profile.username }}</text>
+          <image class="qrcode" src="../../static/pages/image/qrcode.jpg" @tap="goQrcode"></image>
+        </view>
+        <view class="id">
+          <text>ID：{{ profile.user_id }}</text>
+        </view>
       </view>
-      <view class="id">
-        <text>ID：{{ profile.user_id }}</text>
+      <view v-else>
+        <image src="../../static/pages/image/r.png" class="avatar" @tap="tipLogin"></image>
+        <view class="nick" @tap="tipLogin">
+          <text>点击账户登录</text>
+        </view>
       </view>
     </view>
     <view class="container">
@@ -62,7 +71,7 @@
         </view>
         <view class="sright">
           <text v-if="binded" class="rtext" @tap="unbindHandler">已绑定，点击解除</text>
-          <button v-if="!binded" class="bindBtnClass" open-type="getUserInfo" @getuserinfo="bindGetUserInfo">点击绑定</button>
+          <button v-if="!binded" class="bindBtnClass" @tap="getInfo">点击绑定</button>
         </view>
       </view>
     </view>
@@ -82,6 +91,7 @@ export default {
       profile: {},
       binded: false,
       navHeight: 0,
+      isLogin: false,
       wxinfo: {}
     };
   },
@@ -89,13 +99,24 @@ export default {
   components: {},
   props: {},
   onLoad: function () {
+    const isLogin = getApp().isIMLogin();
     this.setData({
-      navHeight: getApp().getNavHeight()
+      navHeight: getApp().getNavHeight(),
+      isLogin
     });
 
     this.fetchAvatar();
     this.wxAuth();
     this.getIsBind();
+  },
+  onShow: function () {
+    const isLogin = getApp().isIMLogin();
+    this.setData({
+      isLogin
+    });
+    if (isLogin && !this.profile.user_id) {
+      this.fetchAvatar();
+    }
   },
   methods: {
     changeAvatar() {
@@ -141,7 +162,6 @@ export default {
       const app_id = im.userManage.getAppid();
       im.userManage.asyncGetProfile(true).then((profile) => {
         let avatar = profile.avatar;
-
         if (avatar) {
           if (avatar.indexOf('http') !== 0) {
             avatar = 'https://api.maximtop.com/file/download/avatar?object_name=' + avatar;
@@ -234,44 +254,31 @@ export default {
     },
 
     getInfo() {
-      const im = getApp().getIM();
-      const code = this.wxinfo.code;
-      const data = this.wxinfo.data;
-      const iv = this.wxinfo.iv;
-      im.sysManage
-        .asyncWxlogin({
-          code,
-          data,
-          iv
-        })
-        .then((res) => {
-          wx.hideLoading();
+      if (this.isLogin) {
+        const im = getApp().getIM();
+        const code = this.wxinfo.code;
+        im.sysManage
+          .asyncWxlogin({
+            code
+          })
+          .then((res) => {
+            wx.hideLoading();
 
-          if (res.openid) {
-            //未绑定
-            this.bindHandler(res.openid);
-          }
-        });
+            if (res.openid) {
+              //未绑定
+              this.bindHandler(res.openid);
+            }
+          });
+      } else {
+        this.$refs.loginPrompt.show();
+      }
     },
 
     logout() {
-      getApp().imLogout();
-    },
-
-    bindGetUserInfo(e) {
-      // 登录的点击....
-      if (e.detail.userInfo) {
-        const wxinfo = this.wxinfo;
-        wxinfo.data = e.detail.encryptedData;
-        wxinfo.iv = e.detail.iv;
-        this.setData({
-          wxinfo
-        });
-        this.getInfo();
+      if (this.isLogin) {
+        getApp().imLogout();
       } else {
-        wx.showToast({
-          title: '微信登录需要授权'
-        });
+        this.$refs.loginPrompt.show();
       }
     },
 
@@ -282,9 +289,15 @@ export default {
     },
 
     goQrcode() {
-      wx.navigateTo({
-        url: './qrcode/index'
-      });
+      if (this.isLogin) {
+        wx.navigateTo({
+          url: './qrcode/index'
+        });
+      }
+    },
+
+    tipLogin() {
+      this.$refs.loginPrompt.show();
     }
   }
 };

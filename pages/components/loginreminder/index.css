@@ -1,0 +1,56 @@
+.loginreminder-box {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 11;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.loginreminder-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 80%;
+  max-width: 600rpx;
+  border: 1rpx solid #ccc;
+  border-radius: 8rpx;
+  box-sizing: bordre-box;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  background: #fff;
+  text-align: center;
+}
+
+.loginreminder-title {
+  width: 100%;
+  padding: 20rpx;
+  font-size: 40rpx;
+}
+.loginreminder-cimage {
+  max-width: 400rpx;
+  max-height: 300rpx;
+}
+.loginreminder-btn-group {
+  display: flex;
+}
+.btn-item {
+  width: 35%;
+  margin-bottom: 20rpx;
+  height: 70rpx;
+  line-height: 70rpx;
+  background-color: white;
+  justify-content: space-around;
+  font-size: 30rpx;
+}
+.loginreminder-certain-btn {
+  color: white;
+  background-color: #179b16;
+}
+.loginreminder-cancel-btn {
+  border: 1rpx solid #afafaf;
+}
+.contentFontColor {
+  color: #868686;
+}

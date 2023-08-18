@@ -1,5 +1,4 @@
 import * as statics from '../utils/static';
-import { STATIC_MESSAGE_STATUS } from '../utils/static';
 import log from '../utils/log';
 import io from '../core/base/io/index';
 import { groupStore, infoStore, messageStore, noticeStore, rosterStore } from '../utils/store';
@@ -15,6 +14,7 @@ import {
   makeConversationOperation
 } from '../core/base/messageMaker';
 import { fire } from '../utils/cusEvent';
+import { STATIC_MESSAGE_STATUS } from '../utils/static';
 
 const getStaticVars = () => statics;
 
@@ -46,13 +46,17 @@ const sendMentionMessage = (params) => {
   const meta = msgFrm.payload.meta;
   messageStore.saveSendingGroupMessage(meta);
   io.sendMessage(msgFrm);
+  const { id } = meta;
+  return id;
 };
 
 const sendInputStatusMessage = (uid, status) => {
   const msgFrm = makeTypingMessage(uid, status);
-  // const meta = msgFrm.payload.meta;
+  const meta = msgFrm.payload.meta;
   // messageStore.saveSendingRosterMessage(meta);
   io.sendMessage(msgFrm);
+  const { id } = meta;
+  return id;
 };
 
 const forwardMessage = function (param) {
@@ -85,6 +89,8 @@ const forwardMessage = function (param) {
         messageStore.saveSendingGroupMessage(smeta);
       }
       io.sendMessage(msgFrm);
+      const { id } = smeta;
+      return id;
     });
   } else {
     const msgFrm = makeForwardMessage(uid, gid, message);
@@ -95,6 +101,8 @@ const forwardMessage = function (param) {
       messageStore.saveSendingGroupMessage(smeta);
     }
     io.sendMessage(msgFrm);
+    const { id } = smeta;
+    return id;
   }
 };
 
@@ -366,6 +374,7 @@ export default {
   getAudio,
   getChatFile,
   downloadAudio,
+  downloadChatFile,
   getServers: dnsManager.getServers,
   asyncWechatUnbind: io.wechatUnbind,
   asyncWechatIsbind: io.wechatIsbind,

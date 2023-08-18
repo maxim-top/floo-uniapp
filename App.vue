@@ -36,7 +36,8 @@ export default {
     navHeight: 60,
     // dnsServer: "https://dns.lanyingim.com/v2/app_dns",
     ws: true,
-    autoLogin: true
+    autoLogin: true,
+    isWeChat: false
   },
 
   methods: {
@@ -101,10 +102,18 @@ export default {
       const im = flooim(config);
       this.globalData.im = im;
       this.addIMListeners();
+      const host = uni.getSystemInfoSync().host;
+      if (host && host.env && host.env === 'WeChat') {
+        this.globalData.isWeChat = true;
+      }
     },
 
     getIM() {
       return this.globalData.im;
+    },
+
+    isWeChatEnvironment() {
+      return this.globalData.isWeChat;
     },
 
     setupIM(appid) {
@@ -144,10 +153,11 @@ export default {
 
     imLogout() {
       const info = this.getLoginInfo();
+      const isWeChat = this.isWeChatEnvironment();
       this.getIM().logout();
       this.removeLoginInfo();
-      wx.reLaunch({
-        url: '../account/login/index'
+      uni.reLaunch({
+        url: isWeChat ? '../profile/index' : '../account/login/index'
       });
     },
 

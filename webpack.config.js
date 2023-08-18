@@ -11,7 +11,7 @@ module.exports = {
   //入口文件输出配置
   output: {
     path: path.resolve(__dirname, '.'),
-    filename: 'floo-2.0.0.uniapp.js',
+    filename: 'floo-3.0.0.uniapp.js',
     library: 'floo',
     libraryExport: 'default',
     libraryTarget: 'umd',

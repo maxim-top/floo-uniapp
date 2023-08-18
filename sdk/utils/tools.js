@@ -1,7 +1,8 @@
 import Long from 'long';
 import { STATIC_MESSAGE_CONTENT_TYPE, STATIC_MESSAGE_STATUS } from './static';
+var JSONBigString = require('json-bigint');
 
-const formatJson = (obj) => {
+const formatJson = (obj = 0) => {
   const isLong = obj instanceof Long;
   if (isLong) {
     return obj.toString();
@@ -35,7 +36,7 @@ const formatJson = (obj) => {
   return hashRet;
 };
 
-const transferToLong = (obj) => {
+const transferToLong = (obj = 0) => {
   const { low, high, unsigned } = obj;
   if (typeof low !== 'undefined' && typeof high !== 'undefined') {
     const srret = new Long(low, high, unsigned);
@@ -73,7 +74,7 @@ const toNumber = (obj = 0) => {
   }
 };
 
-const toLong = (obj) => {
+const toLong = (obj = 0) => {
   if (typeof obj === 'string') return Long.fromString(obj);
   const { low, high, unsigned = true } = obj;
   if (typeof low !== 'undefined' && high !== 'undefined') {
@@ -85,7 +86,7 @@ const toLong = (obj) => {
   return new Long();
 };
 
-const numToString = (obj) => {
+const numToString = (obj = 0) => {
   if (typeof obj === 'undefined') {
     return '';
   }
@@ -122,13 +123,13 @@ const metaToCustomer = (meta) => {
   let attach = null;
   let sconfig = null;
   try {
-    attach = JSON.parse(attachment);
+    attach = JSONBigString.parse(attachment);
   } catch (ex) {
     //
   }
 
   try {
-    sconfig = JSON.parse(config);
+    sconfig = JSONBigString.parse(config);
   } catch (ex) {
     //
   }
@@ -141,11 +142,12 @@ const metaToCustomer = (meta) => {
     from: numToString(from.uid),
     to: numToString(to.uid),
     content,
-    type: Object.keys(STATIC_MESSAGE_CONTENT_TYPE)[ctype].toLowerCase(),
+    type: Object.keys(STATIC_MESSAGE_CONTENT_TYPE)[ctype] ? Object.keys(STATIC_MESSAGE_CONTENT_TYPE)[ctype].toLowerCase() : undefined,
     ext,
     status: local_status ? local_status : STATIC_MESSAGE_STATUS.UNREAD,
     timestamp: numToString(timestamp || 0),
-    toType: type == 2 ? 'roster' : 'group'
+    toType: type == 2 ? 'roster' : 'group',
+    isHistory: false
   };
   if (attach) ret.attach = attach;
   if (sconfig) ret.config = sconfig;
@@ -160,4 +162,11 @@ const metasToCustomer = (metas) => {
   return a;
 };
 
-export { formatJson, transferToLong, toLong, toNumber, numToString, Uint8ArrayToString, stringToUint8Array, metaToCustomer, metasToCustomer };
+const metaToRtcSignalCustomer = (meta) => {
+  if (!meta.payload) return meta;
+  const { payload } = meta;
+  const { content = '' } = payload;
+  return content;
+};
+
+export { formatJson, transferToLong, toLong, toNumber, numToString, Uint8ArrayToString, stringToUint8Array, metaToCustomer, metasToCustomer, metaToRtcSignalCustomer };

@@ -13,7 +13,4 @@ const encode = (obj) => {
   return Provision.encode(obj).finish();
 };
 
-export {
-  decode,
-  encode
-};
+export { decode, encode };

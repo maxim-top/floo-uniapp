@@ -1,4 +1,4 @@
-import protobuf from './protobufjs';
+import protobuf from 'protobufjs';
 import jsonDescriptor from '../xsync';
 
 var root = protobuf.Root.fromJSON(jsonDescriptor);

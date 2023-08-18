@@ -73,6 +73,20 @@
   overflow: hidden;
 }
 
+.file_frame {
+  overflow: hidden;
+}
+
+.file_frame .file {
+  width: 50rpx;
+  height: 50rpx;
+  float: left;
+}
+
+.file_frame .file_name {
+  margin-left: 20rpx;
+}
+
 .voice_frmae {
   overflow: hidden;
 }
@@ -83,5 +97,19 @@
   float: left;
 }
 .voice_frmae .voice_duration {
+  margin-left: 20rpx;
+}
+
+.location_frame {
+  overflow: hidden;
+}
+
+.location_frame .location {
+  width: 60rpx;
+  height: 60rpx;
+  float: left;
+}
+
+.location_frame .location_content {
   margin-left: 20rpx;
 }

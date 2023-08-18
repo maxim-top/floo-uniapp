@@ -14,7 +14,7 @@
         <image class="logo_image" src="/static/pages/image/slogo.png"></image>
       </view>
       <view class="buttonFrame" @tap="wxAuth">
-        <button class="buttonFrame" open-type="getUserInfo" @getuserinfo="saveUserInfo">微信快速登录</button>
+        <button class="buttonFrame">微信快速登录</button>
       </view>
       <view class="colorb tc fs28 mt30">
         <text class="mr20" @tap="goLogin">账号登录</text>
@@ -67,22 +67,6 @@ export default {
       getApp().addIMListeners();
     },
 
-    saveUserInfo(e) {
-      // 登录的点击....
-      if (e.detail.userInfo) {
-        let wxinfo = this.wxinfo;
-        wxinfo.data = e.detail.encryptedData;
-        wxinfo.iv = e.detail.iv;
-        this.setData({
-          wxinfo
-        });
-      } else {
-        wx.showToast({
-          title: '微信登录需要授权'
-        });
-      }
-    },
-
     wxAuth() {
       // 获取 用户信息的。。页面加载就触发
       wx.login({
@@ -111,9 +95,7 @@ export default {
       getApp()
         .getIM()
         .sysManage.asyncWxlogin({
-          code: this.wxinfo.code,
-          iv: this.wxinfo.iv,
-          data: this.wxinfo.data
+          code: this.wxinfo.code
         })
         .then((res) => {
           wx.hideLoading();

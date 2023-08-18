@@ -15,7 +15,7 @@
 
 此工程共有四个源码目录：
 
-1. im 存放蓝莺IM SDK，当前最新版本为 floo-2.0.0.uniapp.js
+1. im 存放蓝莺IM SDK，当前最新版本为 floo-3.0.0.uniapp.js
 2. pages 为 UI 源码目录；
 3. utils 为使用的工具类源码；
 4. third 为第三方源码；

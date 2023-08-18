@@ -30,8 +30,8 @@ cp -R static $pdir/
 rm -rf $pdir/sdk
 
 mkdir -p $pdir/im
-cp floo-2.0.0.uniapp.js $pdir/im/
+cp floo-3.0.0.uniapp.js $pdir/im/
 
-find $pdir -type f | xargs gsed -i'' -E "s/import flooim from (.*)\/sdk\/index';/import flooim from \1\/im\/floo-2.0.0.uniapp';/g"
+find $pdir -type f | xargs gsed -i'' -E "s/import flooim from (.*)\/sdk\/index';/import flooim from \1\/im\/floo-3.0.0.uniapp';/g"
 
 echo "done."
