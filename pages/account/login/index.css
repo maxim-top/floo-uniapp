@@ -6,19 +6,28 @@
 }
 
 .logo {
-  margin-top: 120rpx;
+  margin-top: 180rpx;
   text-align: center;
+  position: absolute;
+  left: 50%;
+  top: 200rpx;
+  transform: translate(-50%, 0);
 }
 .logo_image {
   width: 200rpx;
   height: 200rpx;
 }
 
+.title_text {
+  font-size: 60rpx;
+  padding-top: 100rpx;
+}
+
 .inputFrame {
   margin-top: 40rpx;
-  height: 40rpx;
+  height: 50rpx;
   border-bottom: 1rpx solid #eee;
-  padding: 20rpx 0;
+  padding: 30rpx 0;
 }
 
 .inputFrame input {
@@ -26,39 +35,34 @@
   height: 40rpx;
 }
 
-.inputFrame .check_box {
-  width: 30rpx;
-  height: 30rpx;
-}
-
-.txtFrame {
-  margin-top: 40rpx;
-  height: 40rpx;
-}
-
-.txtFrame .bindTxt {
-  padding-left: 20rpx;
+.getCode {
+  float: right;
   font-size: 28rpx;
-  color: #666;
+}
+
+.check_button {
+  position: absolute;
+  font-size: 24rpx;
+  top: 700rpx;
+  left: 50%;
+  transform: translate(-45%, 0);
+  width: 80%;
+}
+
+.link_text {
+  color: #4fa0ff;
 }
 
 .buttonFrame {
-  margin-top: 120rpx;
+  position: absolute;
+  top: 800rpx;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 70%;
 }
 
-/* .login_btn {
-  height: 78rpx;
-  font-size: 32rpx;
-  background: #4FA0FF;
-} */
-
-.edit_logo {
-  width: 28rpx;
-  height: 28rpx;
-  margin-left: 20rpx;
-}
-.buttonFrame {
-  background: #4fa0ff;
+.button_item {
+  background: rgb(52, 119, 236);
   height: 81rpx;
   line-height: 81rpx;
   text-align: center;
@@ -66,7 +70,52 @@
   font-size: 32rpx;
   border-radius: 7rpx;
 }
+
+.switch_text {
+  position: absolute;
+  top: 900rpx;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 90%;
+}
+
+.toolbar {
+  position: absolute;
+  bottom: 100rpx;
+  height: 100rpx;
+  width: 80%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.toolbar .toolbar_item {
+  height: 120rpx;
+  width: 120rpx;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.toolbar .toolbar_item .icon {
+  height: 90rpx;
+  width: 90rpx;
+  margin: 0 auto;
+}
+
 .appid_text {
   font-size: 24rpx;
   color: #afafaf;
+}
+
+.btm_text {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, 0);
+  bottom: 50rpx;
+  text-align: center;
+  color: gray;
+  font-size: 30rpx;
 }

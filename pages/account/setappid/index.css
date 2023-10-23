@@ -1,0 +1,87 @@
+.container {
+  display: block;
+  height: 2000rpx;
+  margin: 0;
+  background-color: rgb(57, 72, 192);
+  width: 100%;
+}
+
+.panel {
+  position: relative;
+  height: 100%;
+  width: 70%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
+
+.appid_name {
+  font-size: 48rpx;
+  color: white;
+  margin-top: 360rpx;
+}
+
+.appid_icon {
+  height: 40rpx;
+  width: 40rpx;
+  margin-top: 380rpx;
+}
+
+.inputList {
+  display: flex;
+  padding-top: 20rpx;
+}
+
+.inputFrame {
+  height: 40rpx;
+  width: 90%;
+  padding-top: 30rpx;
+  padding-bottom: 20rpx;
+  display: flex;
+  border-bottom: 1rpx solid white;
+}
+
+.inputFrame input {
+  color: white;
+  font-size: 40rpx;
+  height: 50rpx;
+  width: 100%;
+  padding-left: 10rpx;
+}
+
+.buttonFrame {
+  background: rgb(81, 170, 233);
+  height: 81rpx;
+  line-height: 81rpx;
+  text-align: center;
+  color: white;
+  font-size: 32rpx;
+  border-radius: 7rpx;
+  margin-top: 60rpx;
+  width: 100%;
+}
+
+.close_icon {
+  max-height: 22rpx;
+  max-width: 22rpx;
+  padding-top: 22rpx;
+  padding-left: 10rpx;
+  padding-right: 10rpx;
+  float: right;
+}
+
+.drop_icon {
+  max-height: 30rpx;
+  max-width: 30rpx;
+  padding-top: 18rpx;
+  padding-left: 10rpx;
+  padding-right: 10rpx;
+  float: right;
+}
+
+.scan_icon {
+  height: 50rpx;
+  width: 50rpx;
+  float: right;
+  padding-left: 30rpx;
+  padding-top: 50rpx;
+}

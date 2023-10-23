@@ -1,0 +1,84 @@
+.container {
+  display: block;
+  padding: 0 96rpx;
+  margin: 0;
+}
+
+.inputFrame {
+  width: 100%;
+  margin-top: 60rpx;
+  height: 80rpx;
+  border-radius: 0;
+  border-bottom: 4rpx solid gray;
+}
+
+.inputFrame input {
+  font-size: 36rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  margin: 0 15rpx;
+  padding-top: 10rpx;
+  text-align: right;
+}
+
+.tips {
+  float: left;
+  font-size: 40rpx;
+  margin-top: 20rpx;
+  margin-left: 10rpx;
+}
+
+.custome {
+  margin-top: 80rpx;
+}
+
+.item {
+  height: 60rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.item .sleft {
+  color: #9b9b9b;
+  font-size: 32rpx;
+  float: left;
+}
+
+.item .sright {
+  margin-top: 31rpx;
+  color: #4a4a4a;
+  font-size: 32rpx;
+  text-align: right;
+}
+
+.item .sright .sright_switch {
+  transform: scale(0.7);
+  margin-top: -30rpx;
+  margin-right: -20rpx;
+}
+
+.tips_text {
+  color: #9b9b9b;
+  float: left;
+  font-size: 28rpx;
+  margin-top: 20rpx;
+}
+
+.buttonFrame {
+  position: fixed;
+  margin-top: 140rpx;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 70%;
+}
+
+.button_item {
+  background: rgb(52, 119, 236);
+  height: 81rpx;
+  line-height: 81rpx;
+  text-align: center;
+  color: white;
+  font-size: 32rpx;
+  border-radius: 7rpx;
+}

@@ -1,6 +1,5 @@
 <template>
   <view>
-    <loginreminder ref="loginPrompt"></loginreminder>
     <snav>
       <view class="aheader">
         <view data-num="0" :class="'tag ' + (menuCurr == 0 ? 'sel' : '')" @tap.stop="menuClick">
@@ -9,39 +8,68 @@
         <view data-num="1" :class="'tag ' + (menuCurr == 1 ? 'sel' : '')" @tap.stop="menuClick">
           <text>群组</text>
         </view>
-        <view v-if="showsupports" data-num="2" :class="'tag ' + (menuCurr == 2 ? 'sel' : '')" @tap.stop="menuClick">
+        <view data-num="2" :class="'tag ' + (menuCurr == 2 ? 'sel' : '')" @tap.stop="menuClick">
           <text>客服</text>
         </view>
       </view>
     </snav>
     <view class="container" :style="'padding-top:' + navHeight + 'px'">
-      <view v-if="menuCurr == 0" class="item" @tap="addRoster">
-        <image src="/static/pages/image/add.png" class="avatar"></image>
-        <text class="uname">添加好友</text>
+      <view v-if="menuCurr == 0">
+        <view class="item" @tap="addRoster">
+          <image src="/static/pages/image/add.png" class="avatar"></image>
+          <text class="uname">添加好友</text>
+        </view>
+        <view class="background" v-if="!isLogin || (isLogin && rosterList.length === 0)">
+          <image class="background_kmg" src="/static/pages/image/background.png"></image>
+          <view v-if="!isLogin">
+            <text>你还没有登录，请先在设置页面进行登录操作</text>
+          </view>
+          <view v-if="isLogin && rosterList.length === 0">
+            <text>你还没有添加好友，可以点击添加好友头像进行操作</text>
+          </view>
+        </view>
+        <view v-for="item in rosterList" :key="item.user_id" :data-uid="item.user_id" :data-nick="item.nick_name || item.username || item.user_id" class="item" @tap="goChat">
+          <image :src="item.avatar" class="avatar"></image>
+          <text class="uname">{{ item.nick_name || item.username || item.user_id }}</text>
+        </view>
       </view>
-      <view v-if="menuCurr == 1" class="item" @tap="createGroup">
-        <image src="/static/pages/image/cgroup.png" class="avatar"></image>
-        <text class="uname">创建群组</text>
+      <view v-if="menuCurr == 1">
+        <view class="item" @tap="createGroup">
+          <image src="/static/pages/image/cgroup.png" class="avatar"></image>
+          <text class="uname">创建群组</text>
+        </view>
+        <view class="item" @tap="joinGroup">
+          <image src="/static/pages/image/cgroup.png" class="avatar" :style="'filter: brightness(1) invert(0.3)'"></image>
+          <text class="uname">加入群组</text>
+        </view>
+        <view class="background" v-if="!isLogin || (isLogin && groupList.length === 0)">
+          <image class="background_kmg" src="/static/pages/image/background.png"></image>
+          <view v-if="!isLogin">
+            <text>你还没有登录，请先在设置页面进行登录操作</text>
+          </view>
+          <view v-if="isLogin && rosterList.length === 0">
+            <text>你还没有加入群组，可以点击创建群组头像进行操作</text>
+          </view>
+        </view>
+        <view v-for="item in groupList" :key="item.group_id" :data-gid="item.group_id" class="item" @tap="goGroup">
+          <image :src="item.avatar" class="avatar"></image>
+          <text class="uname">{{ item.name }}</text>
+        </view>
       </view>
-      <view
-        v-for="(item, index) in rosterList"
-        :key="index"
-        v-if="menuCurr == 0"
-        :data-uid="item.user_id"
-        :data-nick="item.nick_name || item.username || item.user_id"
-        class="item"
-        @tap="goChat"
-      >
-        <image :src="item.avatar" class="avatar"></image>
-        <text class="uname">{{ item.nick_name || item.username || item.user_id }}</text>
-      </view>
-      <view v-for="(item, index) in groupList" :key="index" v-if="menuCurr == 1" :data-gid="item.group_id" class="item" @tap="goGroup">
-        <image :src="item.avatar" class="avatar"></image>
-        <text class="uname">{{ item.name }}</text>
-      </view>
-      <view v-for="(item, index) in staticList" :key="index" v-if="menuCurr == 2" :data-uid="item.user_id" :data-nick="item.nickname" class="item" @tap="goChat">
-        <image :src="item.avatar" class="avatar"></image>
-        <text class="uname">{{ item.nick_name || item.nickname || item.username }}</text>
+      <view v-if="menuCurr == 2">
+        <view class="background" v-if="!isLogin || (isLogin && !showsupports)">
+          <image class="background_kmg" src="/static/pages/image/background.png"></image>
+          <view v-if="!isLogin">
+            <text>如果想联系技术支持，请将App ID切换成"welovemaxim"后进行登录操作</text>
+          </view>
+          <view v-if="isLogin && !showsupports">
+            <text>如果想联系技术支持,请退出后,将App ID切换成"welovemaxim"</text>
+          </view>
+        </view>
+        <view v-for="item in staticList" v-if="showsupports" :key="item.user_id" :data-uid="item.user_id" :data-nick="item.nickname" class="item" @tap="goChat">
+          <image :src="item.avatar" class="avatar"></image>
+          <text class="uname">{{ item.nick_name || item.nickname || item.username }}</text>
+        </view>
       </view>
     </view>
   </view>
@@ -102,13 +130,34 @@ export default {
     });
   },
   onShow: function () {
-    if (!getApp().isIMLogin()) {
+    const isLogin = getApp().isIMLogin();
+    const showsupports = getApp().getAppid() == 'welovemaxim';
+    this.setData({
+      isLogin,
+      showsupports
+    });
+    if (!isLogin) {
+      this.setData({
+        rosterList: [],
+        groupList: [],
+        staticList: []
+      });
       getApp().isLoginPage = true;
       const isWeChat = getApp().isWeChatEnvironment();
       if (!isWeChat) {
         uni.reLaunch({
           url: '../login/index'
         });
+      }
+    } else {
+      if (this.rosterList.length == 0) {
+        this.getRosterList();
+      }
+      if (this.groupList.length == 0) {
+        this.getGroupList();
+      }
+      if (this.showsupports && this.staticList.length == 0) {
+        this.asyncGetStatics();
       }
     }
   },
@@ -118,13 +167,13 @@ export default {
       var id = e.currentTarget.dataset.uid;
       const nick = e.currentTarget.dataset.nick;
       wx.navigateTo({
-        url: '../roster/index?uid=' + id + '&nick=' + nick
+        url: '../../pages_chat/roster/index?uid=' + id + '&nick=' + nick
       });
     },
     goGroup: function (e) {
       var gid = e.currentTarget.dataset.gid;
       wx.navigateTo({
-        url: '../group/index?gid=' + gid
+        url: '../../pages_chat/group/index?gid=' + gid
       });
     },
 
@@ -143,7 +192,7 @@ export default {
               let avatar = rosterInfo.avatar;
               avatar = im.sysManage.getImage({
                 avatar: rosterInfo.avatar,
-                sdefault: '/static/pages/image/r.png'
+                sdefault: '/static/pages/image/r_b.png'
               });
               return Object.assign({}, rosterInfo, {
                 unreadCount,
@@ -203,7 +252,7 @@ export default {
         res = res.map((x) => {
           x.avatar = im.sysManage.getImage({
             avatar: x.avatar,
-            sdefault: '/static/pages/image/r.png'
+            sdefault: '/static/pages/image/r_b.png'
           });
           return x;
         });
@@ -215,19 +264,34 @@ export default {
     addRoster: function () {
       if (this.isLogin) {
         uni.navigateTo({
-          url: '../roster/add/index'
+          url: '../../pages_chat/roster/add/index'
         });
       } else {
-        this.$refs.loginPrompt.show();
+        uni.navigateTo({
+          url: '../account/loginreminder/index'
+        });
       }
     },
     createGroup: function () {
       if (this.isLogin) {
         uni.navigateTo({
-          url: '../group/create/index'
+          url: '../../pages_chat/group/create/index'
         });
       } else {
-        this.$refs.loginPrompt.show();
+        uni.navigateTo({
+          url: '../account/loginreminder/index'
+        });
+      }
+    },
+    joinGroup: function () {
+      if (this.isLogin) {
+        uni.navigateTo({
+          url: '../../pages_chat/group/join/index'
+        });
+      } else {
+        uni.navigateTo({
+          url: '../account/loginreminder/index'
+        });
       }
     }
   }

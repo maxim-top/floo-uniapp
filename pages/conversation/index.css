@@ -3,12 +3,29 @@
   font-size: 36rpx;
   line-height: 64rpx;
   color: #000;
+  margin-left: 20rpx;
 }
 .container {
   display: block;
   padding: 64px 32rpx 0 32rpx;
   margin: 0;
 }
+
+.container .background {
+  display: block;
+  text-align: center;
+  color: rgb(25, 128, 255);
+  position: absolute;
+  top: 700rpx;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  width: 90%;
+}
+.container .background .background_kmg {
+  width: 80px;
+  height: 80px;
+}
+
 .item {
   height: 140rpx;
   position: relative;
@@ -30,6 +47,10 @@
   margin-left: 112rpx;
   font-size: 30rpx;
   color: #333;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 66.6%;
 }
 .item .last_msg {
   font-size: 26rpx;
@@ -38,7 +59,10 @@
   height: 36rpx;
   line-height: 36rpx;
   margin-left: 112rpx;
+  text-overflow: ellipsis;
   overflow: hidden;
+  white-space: nowrap;
+  max-width: 80%;
 }
 
 .item .unread_number {

@@ -7,8 +7,8 @@
       </view>
     </snav>
     <view class="container" :style="'padding-top:' + navHeight + 'px'">
-      <view class="fs48 mt100">
-        <text>注册并绑定账户</text>
+      <view class="title_text">
+        <text>{{ title }}</text>
       </view>
       <view class="inputFrame">
         <input :value="sname" type="text" placeholder="用户名" @input="nameHandler" />
@@ -16,11 +16,16 @@
       <view class="inputFrame">
         <input type="text" :value="spass" password placeholder="密码" @input="passHandler" />
       </view>
-      <view class="buttonFrame" @tap="bindHandler">
-        <text class="login_btn" type="primary">继续</text>
+      <view class="buttonFrame" @tap="clickLogin">
+        <button class="button_item">继续</button>
       </view>
-      <view class="colorb tc fs28 mt30">
-        <text class @tap="goBind">已有账户，直接绑定</text>
+      <view class="colorb tc fs28 mt30 switch_text">
+        <view v-if="menuCurr == 0">
+          <text class @tap="clickExistBind">已有账户，直接绑定</text>
+        </view>
+        <view v-else>
+          <text class @tap="clickRegBind">暂无账户，点击创建</text>
+        </view>
       </view>
     </view>
   </view>
@@ -35,7 +40,9 @@ export default {
       navHeight: 0,
       sign: '',
       mobile: '',
-      openId: ''
+      openId: '',
+      menuCurr: 0,
+      title: '注册并绑定账户'
     };
   },
 
@@ -54,25 +61,45 @@ export default {
     }
 
     this.setData({
-      navHeight: getApp().navH
+      navHeight: getApp().getNavHeight()
     });
     getApp().addIMListeners();
+
+    const im = getApp().getIM();
+    if (im) {
+      im.on({
+        loginSuccess: this.onLogin
+      });
+    }
   },
 
   onUnload() {
     getApp().removeIMListeners();
+    const im = getApp().getIM();
+    if (im) {
+      im.off({
+        loginSuccess: this.onLogin
+      });
+    }
   },
 
   methods: {
-    bindHandler() {
+    clickLogin() {
+      if (this.menuCurr == 0) {
+        this.bindRegHandler();
+      } else if (this.menuCurr == 1) {
+        this.bindExistHandler();
+      }
+    },
+
+    bindRegHandler() {
       // 继续点击
       if (!this.sname || !this.spass) {
-        wx.showToast({
+        uni.showToast({
           title: '请输入信息!'
         });
-        return;
       } else {
-        wx.showLoading({
+        uni.showLoading({
           title: '注册中'
         });
         const im = getApp().getIM();
@@ -82,7 +109,7 @@ export default {
             password: this.spass
           })
           .then(() => {
-            wx.showLoading({
+            uni.showLoading({
               title: '登录中'
             });
             getApp().saveLoginInfo({
@@ -92,11 +119,29 @@ export default {
             getApp().ensureIMLogin();
           })
           .catch((ex) => {
-            wx.hideLoading();
-            wx.showToast({
+            uni.hideLoading();
+            uni.showToast({
               title: '注册失败'
             });
           });
+      }
+    },
+
+    bindExistHandler() {
+      if (!this.sname || !this.spass) {
+        uni.showToast({
+          title: '请输入信息!'
+        });
+      } else {
+        const im = getApp().getIM();
+        uni.showLoading({
+          title: '登录中'
+        });
+        getApp().saveLoginInfo({
+          username: this.sname,
+          password: this.spass
+        });
+        getApp().ensureIMLogin();
       }
     },
 
@@ -114,8 +159,22 @@ export default {
       });
     },
 
+    clickExistBind() {
+      this.setData({
+        menuCurr: 1,
+        title: '绑定已有账户'
+      });
+    },
+
+    clickRegBind() {
+      this.setData({
+        menuCurr: 0,
+        title: '注册并绑定账户'
+      });
+    },
+
     onLogin() {
-      wx.hideLoading();
+      uni.hideLoading();
 
       if (this.openId) {
         this.bindWechat();
@@ -125,42 +184,24 @@ export default {
     },
 
     goContact() {
-      wx.switchTab({
+      uni.switchTab({
         url: '/pages/contact/index'
       });
     },
 
-    goCodeLogin() {
-      wx.redirectTo({
-        url: '../logincode/index'
-      });
-    },
-
     backClick() {
-      this.goCodeLogin();
-    },
-
-    goBind() {
-      if (this.openId) {
-        wx.redirectTo({
-          url: '../loginbind/index?openId=' + this.openId
-        });
-      } else if (this.mobile) {
-        wx.redirectTo({
-          url: '../loginbind/index?mobile=' + this.mobile + '&sign=' + this.sign
-        });
-      }
+      uni.navigateBack();
     },
 
     onLoginFailure(msg) {
-      wx.hideLoading();
-      wx.showToast({
+      uni.hideLoading();
+      uni.showToast({
         title: '登录出错'
       });
     },
 
     bindPhone() {
-      wx.showLoading({
+      uni.showLoading({
         title: '绑定手机中'
       });
       getApp()
@@ -170,17 +211,17 @@ export default {
           sign: this.sign
         })
         .then(() => {
-          wx.hideLoading();
+          uni.hideLoading();
           this.goContact();
         })
         .catch((ex) => {
-          wx.hideLoading();
+          uni.hideLoading();
           this.goContact();
         });
     },
 
     bindWechat() {
-      wx.showLoading({
+      uni.showLoading({
         title: '绑定微信中'
       });
       getApp()
@@ -191,12 +232,12 @@ export default {
           type: 1
         })
         .then((res) => {
-          wx.hideLoading();
+          uni.hideLoading();
           this.goContact();
         })
         .catch((ex) => {
-          wx.hideLoading();
-          wx.showToast({
+          uni.hideLoading();
+          uni.showToast({
             title: '绑定失败',
             success: () => {
               setTimeout(() => {

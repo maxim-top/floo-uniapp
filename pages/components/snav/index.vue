@@ -1,6 +1,6 @@
 <template>
   <view class="navbar custom-class" :style="'height:' + navHeight + 'px;background-color:' + bgColor">
-    <view class="navbar-action-wrap" :style="'top:' + (navTop - 3) + 'px;'">
+    <view class="navbar-action-wrap" :style="'top:' + navWrapTop + 'px;'">
       <slot></slot>
     </view>
     <view v-if="title" class="navbar-title" :style="'top:' + navTop + 'px'">
@@ -14,7 +14,8 @@ export default {
   data() {
     return {
       navHeight: 0,
-      navTop: 0
+      navTop: 0,
+      navWrapTop: 0
     };
   },
 
@@ -33,7 +34,8 @@ export default {
   beforeMount: function () {
     this.setData({
       navHeight: getApp().getNavHeight(),
-      navTop: getApp().getNavTop()
+      navTop: getApp().getNavTop(),
+      navWrapTop: getApp().getNavTop() - 3
     });
   },
   methods: {}

@@ -1,6 +1,6 @@
 .header_view {
-  background: #4fa0ff;
-  height: 346rpx;
+  background-image: url(../../../static/pages/image/profile_bkg.png);
+  height: 300rpx;
   position: relative;
 }
 
@@ -9,7 +9,7 @@
   width: 188rpx;
   height: 188rpx;
   border-radius: 94rpx;
-  bottom: -14rpx;
+  bottom: 30rpx;
   right: 64rpx;
   z-index: 99;
 }
@@ -19,14 +19,22 @@
   line-height: 58rpx;
   font-size: 42rpx;
   color: white;
-  padding-top: 166rpx;
+  padding-top: 150rpx;
   margin-left: 74rpx;
+  display: inline-flex;
+  max-width: 55%;
+}
+
+.header_view .nick .nick_text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .header_view .id {
   height: 34rpx;
   line-height: 34rpx;
-  font-size: 24rpx;
+  font-size: 30rpx;
   color: white;
   margin: 12rpx 0 0 74rpx;
 }
@@ -62,24 +70,29 @@
   height: 44rpx;
   line-height: 44rpx;
   margin-top: 31rpx;
+  padding-left: 33.3%;
   color: #4a4a4a;
   font-size: 32rpx;
   text-align: right;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.bindBtn {
-  height: 82rpx;
-  line-height: 82rpx;
-  margin-top: 16rpx;
-  font-size: 32rpx;
+.buttonFrame {
+  position: fixed;
+  margin-top: 40rpx;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 70%;
+}
+
+.button_item {
+  background: rgb(52, 119, 236);
+  height: 81rpx;
+  line-height: 81rpx;
   text-align: center;
-}
-
-.sgray {
-  color: #313131;
-  background: #f7f7f7;
-}
-.sblue {
   color: white;
-  background: #4fa0ff;
+  font-size: 32rpx;
+  border-radius: 7rpx;
 }

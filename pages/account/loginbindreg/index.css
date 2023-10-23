@@ -5,20 +5,16 @@
   margin: 0;
 }
 
-.logo {
-  margin-top: 120rpx;
-  text-align: center;
-}
-.logo_image {
-  width: 200rpx;
-  height: 200rpx;
+.title_text {
+  font-size: 60rpx;
+  padding-top: 100rpx;
 }
 
 .inputFrame {
   margin-top: 40rpx;
-  height: 40rpx;
+  height: 50rpx;
   border-bottom: 1rpx solid #eee;
-  padding: 20rpx 0;
+  padding: 30rpx 0;
 }
 
 .inputFrame input {
@@ -26,39 +22,16 @@
   height: 40rpx;
 }
 
-.inputFrame .check_box {
-  width: 30rpx;
-  height: 30rpx;
-}
-
-.txtFrame {
-  margin-top: 40rpx;
-  height: 40rpx;
-}
-
-.txtFrame .bindTxt {
-  padding-left: 20rpx;
-  font-size: 28rpx;
-  color: #666;
-}
-
 .buttonFrame {
-  margin-top: 70rpx;
+  position: absolute;
+  top: 700rpx;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 70%;
 }
 
-/* .login_btn {
-  height: 78rpx;
-  font-size: 32rpx;
-  background: #4FA0FF;
-} */
-
-.edit_logo {
-  width: 28rpx;
-  height: 28rpx;
-  margin-left: 20rpx;
-}
-.buttonFrame {
-  background: #4fa0ff;
+.button_item {
+  background: rgb(52, 119, 236);
   height: 81rpx;
   line-height: 81rpx;
   text-align: center;
@@ -66,7 +39,11 @@
   font-size: 32rpx;
   border-radius: 7rpx;
 }
-.appid_text {
-  font-size: 24rpx;
-  color: #afafaf;
+
+.switch_text {
+  position: absolute;
+  top: 800rpx;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 90%;
 }

@@ -10,21 +10,26 @@
       <view class="logo">
         <image class="logo_image" src="/static/pages/image/slogo.png"></image>
       </view>
-      <view class="txtFrame" style="font-size: 28rpx; margin-top: 350rpx">
-        <text>一键启用多云架构的即时通讯云服务</text>
+      <view class="txtFrame" style="font-size: 32rpx; margin-top: 200rpx">
+        <text>构建新一代智能聊天APP</text>
+        <br />
+        <text>用蓝莺IM专业SDK！</text>
       </view>
-      <view class="txtFrame" style="margin-top: 50rpx">
+      <view class="txtFrame" style="margin-top: 100rpx">
         <text>官网 https://www.lanyingim.com</text>
       </view>
       <view class="txtFrame" style="margin-top: 15rpx">
         <text>联系商务 400-666-0162</text>
       </view>
+      <view class="txtFrame" style="margin-top: 50rpx">
+        <text>蓝莺IM v3.0.1</text>
+      </view>
       <view class="txtFrame" style="margin-top: 15rpx">
-        <text>蓝莺IM v1.2.5</text>
+        <text>Floo/SDK v3.0.1</text>
       </view>
     </view>
     <view class="btm">
-      <text>© 2022 美信拓扑</text>
+      <text>© 2019-2023 美信拓扑</text>
     </view>
   </view>
 </template>

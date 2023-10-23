@@ -17,10 +17,12 @@ export default {
   getDeviceSN,
   asyncBindDeviceToken: http.bindDeviceToken,
   asyncUnbindDeviceToken: http.unbindDeviceToken,
+  asyncDeleteUser: http.userDelete,
 
   asyncTokenUser: http.tokenUser,
   asyncTokenId: http.tokenId,
   asyncRegister: http.userRegister,
+  asyncRegisterAnonymous: http.userRegisterAnonymous,
   asyncUserBindMobile: http.userBindMobile,
   asyncUserUpdateMobile: http.userUpdateMobile,
   asyncUserSendSms: http.userSendSms,

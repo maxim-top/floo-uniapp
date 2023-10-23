@@ -1,86 +1,75 @@
 <template>
   <view>
-    <loginreminder ref="loginPrompt"></loginreminder>
     <view class="header_view" :style="'padding-top:' + navHeight + 'px'">
       <view v-if="isLogin">
         <image :src="profile.avatar" class="avatar" @tap="changeAvatar"></image>
         <view class="nick">
-          <text>{{ profile.nick_name || profile.username }}</text>
-          <image class="qrcode" src="../../static/pages/image/qrcode.jpg" @tap="goQrcode"></image>
+          <text class="nick_text">{{ profile.nick_name || profile.username }}</text>
+          <image class="qrcode" src="../../static/pages/image/qrcode.png" @tap="goQrcode"></image>
         </view>
         <view class="id">
           <text>ID：{{ profile.user_id }}</text>
         </view>
       </view>
       <view v-else>
-        <image src="../../static/pages/image/r.png" class="avatar" @tap="tipLogin"></image>
+        <image src="../../static/pages/image/r_b.png" class="avatar" :style="'filter: brightness(0) invert(1)'" @tap="tipLogin"></image>
         <view class="nick" @tap="tipLogin">
           <text>点击账户登录</text>
         </view>
       </view>
     </view>
     <view class="container">
-      <view class="item">
+      <view class="item" @tap="goProfile">
         <view class="sleft">
-          <text class="ltext">ID</text>
+          <text>账号管理</text>
         </view>
         <view class="sright">
-          <text class="rtext">{{ profile.user_id }}</text>
+          <image class="right" src="/static/pages/image/right.png"></image>
         </view>
       </view>
       <view class="item">
         <view class="sleft">
-          <text class="ltext">用户名</text>
+          <text>微信绑定</text>
         </view>
-        <view class="sright">
-          <text class="rtext">{{ profile.username }}</text>
-        </view>
-      </view>
-      <view class="item">
-        <view class="sleft">
-          <text class="ltext">昵称</text>
-        </view>
-        <view class="sright">
-          <text class="rtext">{{ profile.nick_name }}</text>
+        <view class="btm_right">
+          <button v-if="binded" class="bindBtnClass" @tap="unbindHandler">解除绑定</button>
+          <button v-if="!binded" class="bindBtnClass" @tap="getInfo">点击绑定</button>
         </view>
       </view>
-      <view class="item" @tap="unbindMobile">
+      <view class="item" @tap="goQiWei">
         <view class="sleft">
-          <text class="ltext">手机号</text>
+          <text>专属客服</text>
         </view>
         <view class="sright">
-          <text class="rtext">{{ profile.mobile }}</text>
-        </view>
-      </view>
-      <view class="item">
-        <view class="sleft">
-          <text class="ltext">邮箱</text>
-        </view>
-        <view class="sright">
-          <text class="rtext">{{ profile.email }}</text>
+          <image class="qwright" src="/static/pages/image/qw.png"></image>
         </view>
       </view>
       <view class="item" @tap="goAbout">
         <view class="sleft">
-          <text class="ltext">关于我们</text>
-        </view>
-      </view>
-      <view class="item nb">
-        <view class="sleft">
-          <text class="ltext">微信绑定</text>
+          <text>关于我们</text>
         </view>
         <view class="sright">
-          <text v-if="binded" class="rtext" @tap="unbindHandler">已绑定，点击解除</text>
-          <button v-if="!binded" class="bindBtnClass" @tap="getInfo">点击绑定</button>
+          <image class="right" src="/static/pages/image/right.png"></image>
         </view>
       </view>
     </view>
-    <view class="bindBtn sgray" @tap="logout">
-      <text>退出</text>
+    <view>
+      <uni-popup ref="popup" background-color="rgb(245,241,227)">
+        <view class="popup-content">
+          <view class="text-content">
+            <text :style="'font-size: 34rpx; font-weight: bold;'">添加企业微信</text>
+            <br />
+            <text>沟通产品和技术细节，</text>
+            <br />
+            <text>进群交流大模型AI等话题</text>
+          </view>
+          <view class="qw-qrcode">
+            <image class="service_bkg" src="/static/pages/image/service.png" show-menu-by-longpress="true"></image>
+            <text>长按扫码添加</text>
+          </view>
+        </view>
+      </uni-popup>
     </view>
-    <!-- <view class='bindBtn sblue' wx:if="{{!binded}}" bindtap='bindHandler'>
-  <text>绑定微信</text>
-</view> -->
   </view>
 </template>
 
@@ -92,6 +81,7 @@ export default {
       binded: false,
       navHeight: 0,
       isLogin: false,
+      isWechat: false,
       wxinfo: {}
     };
   },
@@ -102,12 +92,17 @@ export default {
     const isLogin = getApp().isIMLogin();
     this.setData({
       navHeight: getApp().getNavHeight(),
-      isLogin
+      isLogin,
+      isWechat: getApp().isWeChatEnvironment()
     });
 
-    this.fetchAvatar();
-    this.wxAuth();
-    this.getIsBind();
+    if (this.isLogin) {
+      this.fetchAvatar();
+      this.getIsBind();
+      if (this.isWechat) {
+        this.wxAuth();
+      }
+    }
   },
   onShow: function () {
     const isLogin = getApp().isIMLogin();
@@ -116,6 +111,14 @@ export default {
     });
     if (isLogin && !this.profile.user_id) {
       this.fetchAvatar();
+    }
+
+    if (isLogin && this.isWechat && !this.wxinfo.code) {
+      this.wxAuth();
+    }
+
+    if (isLogin && !this.wxinfo.getBind) {
+      this.getIsBind();
     }
   },
   methods: {
@@ -169,7 +172,7 @@ export default {
 
           avatar = avatar + '&image_type=2' + '&access-token=' + token + '&app_id=' + app_id;
         } else {
-          avatar = '/static/image/roster.png';
+          avatar = '/static/pages/image/r_b.png';
         }
 
         profile.avatar = avatar; // profile.nick_name = profile.alias || profile.nick_name || profile.username;
@@ -179,25 +182,17 @@ export default {
       });
     },
 
-    bindWechat() {
-      if (this.binded) {
-        this.unbindHandler();
-      } else {
-        if (getApp().openId) {
-          this.bindHandler();
-        } else {
-          this.wxAuth();
-        }
-      }
-    },
-
     getIsBind() {
+      let that = this;
       getApp()
         .getIM()
         .sysManage.asyncWechatIsbind()
         .then((binded) => {
+          let wxinfo = that.wxinfo;
+          wxinfo.getBind = true;
           this.setData({
-            binded
+            binded,
+            wxinfo
           });
         });
     },
@@ -213,37 +208,56 @@ export default {
           this.setData({
             binded: true
           });
+          uni.showToast({
+            title: '绑定成功'
+          });
         })
         .catch((ex) => {
-          wx.showToast({
+          uni.showToast({
             title: '绑定失败'
           });
         });
     },
 
     unbindHandler() {
-      getApp()
-        .getIM()
-        .sysManage.asyncWechatUnbind()
-        .then((res) => {
-          this.setData({
-            binded: false
-          });
-          this.wxAuth();
-        })
-        .catch((ex) => {
-          wx.showToast({
-            title: '解绑失败'
-          });
-        });
+      let that = this;
+      uni.showModal({
+        title: '解除绑定',
+        content: '解除微信账号绑定',
+        success: function (res) {
+          if (res.confirm) {
+            getApp()
+              .getIM()
+              .sysManage.asyncWechatUnbind()
+              .then((res) => {
+                that.setData({
+                  binded: false
+                });
+                uni.showToast({
+                  title: '解绑成功'
+                });
+                if (that.isWechat) {
+                  that.wxAuth();
+                }
+              })
+              .catch((ex) => {
+                uni.showToast({
+                  title: '解绑失败'
+                });
+              });
+          } else if (res.cancel) {
+            // do nothing here.
+          }
+        }
+      });
     },
 
     wxAuth() {
       // 获取 用户信息的。。页面加载就触发
-      wx.login({
+      uni.login({
         success: (res) => {
           if (res.code) {
-            const wxinfo = this.wxinfo;
+            let wxinfo = this.wxinfo;
             wxinfo.code = res.code;
             this.setData({
               wxinfo
@@ -255,53 +269,66 @@ export default {
 
     getInfo() {
       if (this.isLogin) {
-        const im = getApp().getIM();
-        const code = this.wxinfo.code;
-        im.sysManage
-          .asyncWxlogin({
-            code
-          })
-          .then((res) => {
-            wx.hideLoading();
+        if (this.isWechat) {
+          const im = getApp().getIM();
+          im.sysManage
+            .asyncWxlogin({
+              code: this.wxinfo.code
+            })
+            .then((res) => {
+              uni.hideLoading();
 
-            if (res.openid) {
-              //未绑定
-              this.bindHandler(res.openid);
-            }
+              if (res.openid) {
+                //未绑定
+                this.bindHandler(res.openid);
+              }
+            });
+        } else {
+          uni.showToast({
+            title: 'H5网页不支持'
           });
+        }
       } else {
-        this.$refs.loginPrompt.show();
+        uni.navigateTo({
+          url: '../account/loginreminder/index'
+        });
       }
     },
 
-    logout() {
+    goProfile() {
       if (this.isLogin) {
-        getApp().imLogout();
-      } else {
-        this.$refs.loginPrompt.show();
+        uni.navigateTo({
+          url: './detail/index'
+        });
       }
+    },
+
+    goQiWei() {
+      this.$refs.popup.open('bottom');
     },
 
     goAbout() {
-      wx.navigateTo({
+      uni.navigateTo({
         url: './about/index'
       });
     },
 
     goQrcode() {
       if (this.isLogin) {
-        wx.navigateTo({
+        uni.navigateTo({
           url: './qrcode/index'
         });
       }
     },
 
     tipLogin() {
-      this.$refs.loginPrompt.show();
+      uni.navigateTo({
+        url: '../account/loginreminder/index'
+      });
     }
   }
 };
 </script>
-<style>
+<style lang="scss">
 @import './index.css';
 </style>

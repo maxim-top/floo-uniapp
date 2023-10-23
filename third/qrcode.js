@@ -717,7 +717,7 @@
      * 新增$this参数，传入组件的this,兼容在组件中生成
      */
     draw: function (str, canvas, cavW, cavH, $this, ecc) {
-      var that = this;
+      let that = this;
       ecclevel = ecc || ecclevel;
       canvas = canvas || _canvas;
 
@@ -726,30 +726,31 @@
         return;
       }
 
-      var size = Math.min(cavW, cavH);
+      let size = Math.min(cavW, cavH);
       str = that.utf16to8(str); //增加中文显示
 
-      var frame = that.getFrame(str),
+      let frame = that.getFrame(str),
         // 组件中生成qrcode需要绑定this
-        ctx = wx.createCanvasContext(canvas, $this),
+        ctx = uni.createCanvasContext(canvas, $this),
         px = Math.round(size / (width + 8));
-      var roundedSize = px * (width + 8),
+      let roundedSize = px * (width + 8),
         offset = Math.floor((size - roundedSize) / 2);
       size = roundedSize; //ctx.clearRect(0, 0, cavW, cavW);
 
       ctx.setFillStyle('#ffffff');
-      ctx.fillRect(0, 0, cavW, cavW);
+      ctx.fillRect(0, 0, cavW, cavH);
       ctx.setFillStyle('#000000');
 
-      for (var i = 0; i < width; i++) {
-        for (var j = 0; j < width; j++) {
+      for (let i = 0; i < width; i++) {
+        for (let j = 0; j < width; j++) {
           if (frame[j * width + i]) {
             ctx.fillRect(px * (4 + i) + offset, px * (4 + j) + offset, px, px);
           }
         }
       }
-
-      ctx.draw();
+      setTimeout(() => {
+        ctx.draw();
+      }, 200);
     }
   };
   module.exports = {

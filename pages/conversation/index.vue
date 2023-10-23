@@ -4,13 +4,16 @@
       <text class="atitle">蓝莺IM</text>
     </snav>
     <view class="container" :style="'padding-top:' + navHeight + 'px'">
-      <view v-if="!isLogin">
-        <text>请先登录并添加联系人</text>
+      <view class="background" v-if="!isLogin || (isLogin && conversationList.length === 0)">
+        <image class="background_kmg" src="/static/pages/image/background.png"></image>
+        <view v-if="!isLogin">
+          <text>你还没有登录，请先在设置页面进行登录操作</text>
+        </view>
+        <view v-if="isLogin && conversationList.length === 0">
+          <text>你没有聊天会话，可以在联系人页面下操作添加好友或创建群组</text>
+        </view>
       </view>
-      <view v-if="isLogin && conversationList.length === 0">
-        <text>请先添加联系人</text>
-      </view>
-      <view v-for="(conversation, index) in conversationList" :key="index" @tap="touchConversation" :data-type="conversation.type" :data-sid="conversation.sid" class="item">
+      <view v-for="conversation in conversationList" :key="conversation.sid" @tap="touchConversation" :data-type="conversation.type" :data-sid="conversation.sid" class="item">
         <view v-if="conversation.unread != 0" class="unread_number">
           <text>{{ conversation.unread }}</text>
         </view>
@@ -52,14 +55,16 @@ export default {
   components: {},
   props: {},
   onShow: function () {
-    const token = getApp().getIM().userManage.getToken();
     const isLogin = getApp().isIMLogin();
 
     this.setData({
       isLogin
     });
 
-    if (!token) {
+    if (!isLogin) {
+      this.setData({
+        conversationList: []
+      });
       if (getApp().isLoginPage === false) {
         getApp().isLoginPage = true;
         const isWeChat = getApp().isWeChatEnvironment();
@@ -113,11 +118,11 @@ export default {
 
       if (type === 'roster') {
         wx.navigateTo({
-          url: '../roster/index?uid=' + id
+          url: '../../pages_chat/roster/index?uid=' + id
         });
       } else {
         wx.navigateTo({
-          url: '../group/index?gid=' + id
+          url: '../../pages_chat/group/index?gid=' + id
         });
       }
     },
@@ -144,7 +149,7 @@ export default {
           name = sroster.nick_name || sroster.username || sroster.user_id;
           avatar = im.sysManage.getImage({
             avatar: sroster.avatar,
-            sdefault: '/static/pages/image/r.png'
+            sdefault: '/static/pages/image/r_b.png'
           });
         } else if (item.type === 'group') {
           //group

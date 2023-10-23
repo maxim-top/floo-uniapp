@@ -1,0 +1,29 @@
+.container {
+  display: block;
+  padding: 0 96rpx;
+  margin: 0;
+}
+
+.container .background {
+  display: block;
+  margin-top: 200rpx;
+  text-align: center;
+  color: rgb(25, 128, 255);
+  padding-bottom: 300rpx;
+}
+
+.container .background .background_kmg {
+  width: 300rpx;
+  height: 300rpx;
+}
+
+.buttonFrame {
+  background: rgb(52, 119, 236);
+  height: 81rpx;
+  line-height: 81rpx;
+  text-align: center;
+  color: black;
+  font-size: 32rpx;
+  border-radius: 7rpx;
+  margin-top: 50rpx;
+}

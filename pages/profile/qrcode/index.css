@@ -24,15 +24,20 @@
 }
 
 .info .nick {
-  font-size: 24rpx;
+  font-size: 30rpx;
   padding-top: 10rpx;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 66.6%;
 }
 .info .uid {
-  font-size: 24rpx;
+  font-size: 30rpx;
   padding-top: 10rpx;
 }
 
 .canvas-box {
   text-align: center;
   border: none;
+  padding-top: 10rpx;
 }

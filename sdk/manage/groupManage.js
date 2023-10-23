@@ -2,8 +2,8 @@ import http from '../core/base/io/index';
 import { fire } from '../utils/cusEvent';
 import dataLogics from '../core/base/dataLogics';
 import { groupStore, messageStore } from '../utils/store';
-import { makeRecallMessage } from '../core/base/messageMaker';
-
+import { formatJson } from '../utils/tools';
+import { makeRecallMessage, makeContentAppendMessage, makeReplaceMessage } from '../core/base/messageMaker';
 const asyncGetGroupInfo = (group_id, froce) => {
   group_id = group_id - 0;
   const ret = groupStore.getGroupInfo(group_id) || {};
@@ -118,6 +118,22 @@ const recallMessage = (uid, mid) => {
   fire('swapSendMessage', smessage);
 };
 
+const appendMessageContent = (uid, mid, content) => {
+  const smessage = makeContentAppendMessage(uid, mid, content);
+  fire('swapSendMessage', formatJson(smessage));
+  fire('sendMessage', smessage);
+};
+
+const replaceMessage = (uid, mid, content = '', config = null, ext = null) => {
+  if (!content && !config && !ext) {
+    // do nothing.
+  } else {
+    const smessage = makeReplaceMessage(uid, mid, content, config, ext);
+    fire('swapSendMessage', formatJson(smessage));
+    fire('sendMessage', smessage);
+  }
+};
+
 const getUnreadCount = (gid) => messageStore.getUnreadByGroupId(gid);
 
 export default {
@@ -131,6 +147,8 @@ export default {
   getGruopMessage,
   readGroupMessage,
   recallMessage,
+  appendMessageContent,
+  replaceMessage,
   getUnreadCount,
 
   asyncGetAdminList: http.groupAdminList,

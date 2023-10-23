@@ -2,7 +2,7 @@
   "name": "lanying-im-uniapp",
   "appid": "__UNI__8E89E17",
   "description": "lanying-im uniapp version",
-  "versionName": "1.0.0",
+  "versionName": "3.0.1",
   "versionCode": "100",
   "transformPx": false,
   "app-plus": {
@@ -52,13 +52,17 @@
     "appid": "wx2c43b05e798fa1c1",
     "setting": {
       "urlCheck": false,
-      "es6": true
+      "es6": true,
+      "minified": true
     },
     "usingComponents": true,
     "permission": {
       "scope.userLocation": {
         "desc": "你的位置信息将用于小程序位置接口的效果展示"
       }
+    },
+    "optimization": {
+      "subPackages": true
     },
     "plugins": {}
   },

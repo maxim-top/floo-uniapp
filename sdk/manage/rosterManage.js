@@ -2,7 +2,7 @@ import http from '../core/base/io/index';
 import { fire } from '../utils/cusEvent';
 import { infoStore, messageStore, recentStore, rosterStore } from '../utils/store';
 import { formatJson } from '../utils/tools';
-import { makeDeleteMessage, makeRecallMessage, makeUnreadMessage } from '../core/base/messageMaker';
+import { makeDeleteMessage, makeRecallMessage, makeUnreadMessage, makeContentAppendMessage, makeReplaceMessage } from '../core/base/messageMaker';
 
 const asyncGetRosterIdList = (force) => {
   if (force) {
@@ -111,6 +111,22 @@ const deleteMessage = (uid, mid) => {
   fire('sendMessage', smessage);
 };
 
+const appendMessageContent = (uid, mid, content) => {
+  const smessage = makeContentAppendMessage(uid, mid, content);
+  fire('swapSendMessage', formatJson(smessage));
+  fire('sendMessage', smessage);
+};
+
+const replaceMessage = (uid, mid, content = '', config = null, ext = null) => {
+  if (!content && !config && !ext) {
+    // do nothing.
+  } else {
+    const smessage = makeReplaceMessage(uid, mid, content, config, ext);
+    fire('swapSendMessage', formatJson(smessage));
+    fire('sendMessage', smessage);
+  }
+};
+
 const getRosterInfo = (rid) => rosterStore.getRosterInfo(rid);
 
 const getUnreadCount = (uid) => messageStore.getUnreadByRosterId(uid);
@@ -127,6 +143,8 @@ export default {
   getAllRosterDetail,
   recallMessage,
   deleteMessage,
+  appendMessageContent,
+  replaceMessage,
   getUnreadCount,
   unreadMessage,
   getRosterInfo,

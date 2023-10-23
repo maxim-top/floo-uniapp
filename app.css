@@ -9,6 +9,15 @@
   box-sizing: border-box;
 }
 
+scroll-view ::-webkit-scrollbar {
+  display: block !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  background: transparent;
+  color: transparent;
+}
+
 /*** nav中的后退 **/
 .back {
   height: 64rpx;
@@ -17,7 +26,8 @@
 .back .back_kmg {
   width: 40rpx;
   height: 40rpx;
-  margin-top: 12rpx;
+  margin-top: 18rpx;
+  margin-left: 20rpx;
 }
 
 .colorb {

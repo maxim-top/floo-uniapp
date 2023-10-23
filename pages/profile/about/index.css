@@ -20,9 +20,10 @@
 .txtFrame {
   margin-top: 30rpx;
   height: 40rpx;
-  font-size: 20rpx;
+  font-size: 28rpx;
   text-align: center;
   color: #666;
+  line-height: 50rpx;
 }
 
 .back {
@@ -32,14 +33,15 @@
 .back .back_kmg {
   width: 40rpx;
   height: 40rpx;
-  margin-top: 12rpx;
+  margin-top: 18rpx;
+  margin-left: 20rpx;
 }
 
 .btm {
   position: fixed;
   width: 100%;
-  bottom: 15rpx;
+  bottom: 40rpx;
   text-align: center;
   color: #333;
-  font-size: 24rpx;
+  font-size: 30rpx;
 }

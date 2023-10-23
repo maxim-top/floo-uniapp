@@ -1,15 +1,11 @@
 import Vue from 'vue';
 import App from './App';
 
-import loginreminder from './pages/components/loginreminder/index';
-import prompt from './pages/components/prompt/index';
-import rostermsg from './pages/components/rostermsg/index';
 import snav from './pages/components/snav/index';
+import ulink from './pages/components/ulink/index';
 
-Vue.component('loginreminder', loginreminder);
-Vue.component('prompt', prompt);
-Vue.component('rostermsg', rostermsg);
 Vue.component('snav', snav);
+Vue.component('ulink', ulink);
 
 Vue.config.productionTip = false;
 

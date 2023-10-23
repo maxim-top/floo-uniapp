@@ -1,6 +1,7 @@
 .aheader {
   font-size: 36rpx;
   color: #4a4a4a;
+  margin-left: 20rpx;
 }
 .aheader .tag {
   width: 80rpx;
@@ -24,6 +25,23 @@
   margin-top: 3rpx;
   padding-top: 64px;
 }
+
+.container .background {
+  display: block;
+  text-align: center;
+  color: rgb(25, 128, 255);
+  position: absolute;
+  top: 700rpx;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  width: 90%;
+}
+
+.container .background_kmg {
+  width: 80px;
+  height: 80px;
+}
+
 .item {
   height: 122rpx;
   border-top: 1rpx solid #dfdfdf;
@@ -42,6 +60,10 @@
   line-height: 122rpx;
   font-size: 32rpx;
   color: #333;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 66.6%;
 }
 
 page::after {

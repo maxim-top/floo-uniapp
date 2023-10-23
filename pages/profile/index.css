@@ -1,6 +1,6 @@
 .header_view {
-  background: #4fa0ff;
-  height: 346rpx;
+  background-image: url(../../static/pages/image/profile_bkg.png);
+  height: 300rpx;
   position: relative;
 }
 
@@ -9,7 +9,7 @@
   width: 188rpx;
   height: 188rpx;
   border-radius: 94rpx;
-  bottom: 14rpx;
+  bottom: 30rpx;
   right: 64rpx;
   z-index: 99;
 }
@@ -19,14 +19,23 @@
   line-height: 58rpx;
   font-size: 42rpx;
   color: white;
-  padding-top: 166rpx;
+  padding-top: 150rpx;
   margin-left: 74rpx;
+  display: inline-flex;
+  max-width: 55%;
+}
+
+.header_view .nick .nick_text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 80%;
 }
 
 .header_view .nick .qrcode {
   width: 40rpx;
   height: 40rpx;
-  margin-left: 24rpx;
+  margin-left: 16rpx;
   position: relative;
   top: 8rpx;
 }
@@ -34,34 +43,30 @@
 .header_view .id {
   height: 34rpx;
   line-height: 34rpx;
-  font-size: 24rpx;
+  font-size: 30rpx;
   color: white;
   margin: 12rpx 0 0 74rpx;
 }
 
 .container {
   padding-top: 40rpx;
-  padding-left: 24rpx;
-  padding-right: 24rpx;
   padding-bottom: 0;
 }
 
 .container .item {
   height: 106rpx;
+  padding-left: 24rpx;
+  padding-right: 24rpx;
   border-bottom: 1rpx solid #f0f0f0;
   box-sizing: border-box;
   width: 100%;
-}
-
-.nb {
-  border-bottom: none !important;
 }
 
 .container .item .sleft {
   height: 44rpx;
   line-height: 44rpx;
   margin-top: 31rpx;
-  color: #9b9b9b;
+  color: #4a4a4a;
   font-size: 32rpx;
   float: left;
 }
@@ -70,26 +75,47 @@
   height: 44rpx;
   line-height: 44rpx;
   margin-top: 31rpx;
+  padding-left: 33.3%;
+  color: #9b9b9b;
+  font-size: 32rpx;
+  text-align: right;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.container .item .sright .right {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.container .item .sright .qwright {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.buttonFrame {
+  height: 100rpx;
+  line-height: 100rpx;
+  width: 100%;
+  text-align: center;
+  color: rgb(40, 40, 40);
+  font-size: 36rpx;
+  border-top: 12rpx solid #f0f0f0;
+  border-bottom: 12rpx solid #f0f0f0;
+}
+
+.container .item .btm_right {
+  height: 106rpx;
+  line-height: 44rpx;
+  padding-left: 30rpx;
+  padding-top: 31rpx;
   color: #4a4a4a;
   font-size: 32rpx;
   text-align: right;
-}
-
-.bindBtn {
-  height: 82rpx;
-  line-height: 82rpx;
-  margin-top: 16rpx;
-  font-size: 32rpx;
-  text-align: center;
-}
-
-.sgray {
-  color: #313131;
-  background: #f7f7f7;
-}
-.sblue {
-  color: white;
-  background: #4fa0ff;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .bindBtnClass {
@@ -101,4 +127,33 @@
   text-align: center;
   background: none;
   border: none;
+  margin-top: -10rpx;
+}
+
+.popup-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 280rpx;
+  flex-direction: row;
+  padding: 0 20rpx 0 0;
+  font-size: 32rpx;
+  background-color: rgb(245, 241, 227);
+}
+
+.popup-content .text-content {
+  padding: 30rpx 40rpx 20rpx 0;
+}
+
+.qw-qrcode {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20rpx;
+  padding-left: 40rpx;
+  text-align: center;
+}
+
+.service_bkg {
+  width: 200rpx;
+  height: 200rpx;
 }

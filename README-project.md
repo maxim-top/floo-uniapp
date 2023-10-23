@@ -28,6 +28,10 @@
 
 2. 打开 HBuilder（Uniapp IDE）进行开发
 
+3. uni_modules目录下引用了下列插件，需要使用HBuilderX手动导入生产，在根目录下自动生成uni_modules目录。现在引用了下列项目：
+   - uni-popup
+   - mp-html
+
 ## 开发自己的应用
 
 1. 修改蓝莺IM AppID

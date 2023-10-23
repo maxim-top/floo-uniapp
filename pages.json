@@ -9,55 +9,19 @@
       "style": {}
     },
     {
-      "path": "pages/account/reg/index",
-      "style": {}
-    },
-    {
-      "path": "pages/account/loginbind/index",
-      "style": {}
-    },
-    {
       "path": "pages/account/loginbindreg/index",
       "style": {}
     },
     {
-      "path": "pages/account/logincode/index",
+      "path": "pages/account/loginreminder/index",
       "style": {}
     },
     {
-      "path": "pages/account/loginpass/index",
+      "path": "pages/account/setappid/index",
       "style": {}
     },
     {
-      "path": "pages/account/regbind/index",
-      "style": {}
-    },
-    {
-      "path": "pages/roster/index",
-      "style": {}
-    },
-    {
-      "path": "pages/roster/message/index",
-      "style": {
-        "component": true
-      }
-    },
-    {
-      "path": "pages/roster/add/index",
-      "style": {}
-    },
-    {
-      "path": "pages/group/index",
-      "style": {}
-    },
-    {
-      "path": "pages/group/message/index",
-      "style": {
-        "component": true
-      }
-    },
-    {
-      "path": "pages/group/create/index",
+      "path": "pages/account/edit/index",
       "style": {}
     },
     {
@@ -69,31 +33,13 @@
       "style": {}
     },
     {
-      "path": "pages/work/list/index",
-      "style": {}
-    },
-    {
-      "path": "pages/work/detail/index",
-      "style": {}
-    },
-    {
-      "path": "pages/work/sign/index",
-      "style": {}
-    },
-    {
-      "path": "pages/components/loginreminder/index",
-      "style": {
-        "component": true
-      }
-    },
-    {
-      "path": "pages/components/prompt/index",
-      "style": {
-        "component": true
-      }
-    },
-    {
       "path": "pages/components/snav/index",
+      "style": {
+        "component": true
+      }
+    },
+    {
+      "path": "pages/components/ulink/index",
       "style": {
         "component": true
       }
@@ -109,6 +55,49 @@
     {
       "path": "pages/profile/qrcode/index",
       "style": {}
+    },
+    {
+      "path": "pages/profile/detail/index",
+      "style": {}
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pages_chat",
+      "pages": [
+        {
+          "path": "roster/index",
+          "style": {}
+        },
+        {
+          "path": "roster/message/index",
+          "style": {
+            "component": true
+          }
+        },
+        {
+          "path": "roster/add/index",
+          "style": {}
+        },
+        {
+          "path": "group/index",
+          "style": {}
+        },
+        {
+          "path": "group/message/index",
+          "style": {
+            "component": true
+          }
+        },
+        {
+          "path": "group/create/index",
+          "style": {}
+        },
+        {
+          "path": "group/join/index",
+          "style": {}
+        }
+      ]
     }
   ],
   "tabBar": {
@@ -143,6 +132,5 @@
     "navigationBarTitleText": "",
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom"
-  },
-  "subPackages": []
+  }
 }

@@ -25,6 +25,7 @@ cp sitemap.json $pdir/
 
 cp -R third $pdir/
 cp -R pages $pdir/
+cp -R pages_chat $pdir/
 cp -R static $pdir/
 
 rm -rf $pdir/sdk
