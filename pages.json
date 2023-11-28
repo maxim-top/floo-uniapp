@@ -80,6 +80,14 @@
           "style": {}
         },
         {
+          "path": "roster/audiocall/index",
+          "style": {}
+        },
+        {
+          "path": "roster/videocall/index",
+          "style": {}
+        },
+        {
           "path": "group/index",
           "style": {}
         },

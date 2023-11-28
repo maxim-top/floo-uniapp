@@ -36,7 +36,6 @@ Janus.isExtensionEnabled = function () {
     // No need for the extension, getDisplayMedia is supported
     return true;
   }
-  /*
   if (window.navigator.userAgent.match('Chrome')) {
     let chromever = parseInt(window.navigator.userAgent.match(/Chrome\/(.*) /)[1], 10);
     let maxver = 33;
@@ -50,8 +49,6 @@ Janus.isExtensionEnabled = function () {
     // Firefox and others, no need for the extension (but this doesn't mean it will work)
     return true;
   }
-  */
-  return true;
 };
 
 var defaultExtension = {
@@ -61,7 +58,6 @@ var defaultExtension = {
     return document.querySelector('#janus-extension-installed') !== null;
   },
   getScreen: function (callback) {
-    /*
     let pending = window.setTimeout(function () {
       let error = new Error('NavigatorUserMediaError');
       error.name = 'The required Chrome extension is not installed: click <a href="#">here</a> to install it. (NOTE: this will need you to refresh the page)';
@@ -69,13 +65,11 @@ var defaultExtension = {
     }, 1000);
     this.cache[pending] = callback;
     window.postMessage({ type: 'janusGetScreen', id: pending }, '*');
-    */
   },
   init: function () {
     let cache = {};
     this.cache = cache;
     // Wait for events from the Chrome Extension
-    /*
     window.addEventListener('message', function (event) {
       if (event.origin != window.location.origin) return;
       if (event.data.type == 'janusGotScreen' && cache[event.data.id]) {
@@ -94,7 +88,6 @@ var defaultExtension = {
         window.clearTimeout(event.data.id);
       }
     });
-    */
   }
 };
 
@@ -499,7 +492,6 @@ Janus.init = function (options) {
     // Detect tab close: make sure we don't loose existing onbeforeunload handlers
     // (note: for iOS we need to subscribe to a different event, 'pagehide', see
     // https://gist.github.com/thehunmonkgroup/6bee8941a49b86be31a787fe8f4b8cfe)
-    /*
     let iOS = ['iPad', 'iPhone', 'iPod'].indexOf(navigator.platform) >= 0;
     let eventName = iOS ? 'pagehide' : 'beforeunload';
     let oldOBF = window['on' + eventName];
@@ -515,7 +507,6 @@ Janus.init = function (options) {
         oldOBF();
       }
     });
-    */
     // If this is a Safari Technology Preview, check if VP8 is supported
     Janus.safariVp8 = false;
     if (Janus.webRTCAdapter.browserDetails.browser === 'safari' && Janus.webRTCAdapter.browserDetails.version >= 605) {
@@ -567,7 +558,7 @@ Janus.init = function (options) {
 
 // Helper method to check whether WebRTC is supported by this browser
 Janus.isWebrtcSupported = function () {
-  return !!RTCPeerConnection;
+  return !!window.RTCPeerConnection;
 };
 // Helper method to check whether devices can be accessed by this browser (e.g., not possible via plain HTTP)
 Janus.isGetUserMediaAvailable = function () {
@@ -2482,7 +2473,7 @@ function Janus(gatewayCallbacks) {
               }
             }
             stream = await navigator.mediaDevices.getUserMedia(constraints);
-            //window.stream = stream; // for clean and close media.
+            window.stream = stream; // for clean and close media.
             if (track.gumGroup && constraints.audio && constraints.video) {
               // We just performed a grouped getUserMedia, keep track of the
               // stream so that we can immediately assign the track later

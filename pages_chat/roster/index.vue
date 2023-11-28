@@ -18,6 +18,7 @@
           </block>
         </view>
       </scroll-view>
+      <hr class="split_line" />
       <view class="inputer">
         <image class="voice" src="/static/pages/image/voice.png" @tap="voiceHandler"></image>
         <input v-if="!showvoice" @input="inputChangeHandler" class="input" type="text" confirm-type="send" @confirm="sendMessageHandler" :value="inputValue" />
@@ -48,11 +49,11 @@
         <image class="icon" src="/static/pages/image/toolbar/video.png"></image>
         <text class="text">小视频</text>
       </view>
-      <view class="toolbar_item">
+      <view class="toolbar_item" @tap="selectVideoCallHandler">
         <image class="icon" src="/static/pages/image/toolbar/video_call.png"></image>
         <text class="text">视频通话</text>
       </view>
-      <view class="toolbar_item">
+      <view class="toolbar_item" @tap="selectAudioCallHandler">
         <image class="icon" src="/static/pages/image/toolbar/audio_call.png"></image>
         <text class="text">语音通话</text>
       </view>
@@ -177,7 +178,21 @@ export default {
     },
 
     appendMessage: function (data) {
-      const newMessages = data.messages || [];
+      const messages = data.messages || [];
+      const newMessages = messages.filter((message) => {
+        const { type, config, ext } = message;
+        if (type === 'rtc' && config && config.action && config.action !== 'record') {
+          return false;
+        }
+        if (ext) {
+          const sext = JSON.parse(ext);
+          if (type == 'rtc' && sext && sext.callId) {
+            return false;
+          }
+        }
+        return true;
+      });
+
       const isHistory = data.history;
       if (isHistory) {
         this.queryHistoryMessageId = data.next;
@@ -250,10 +265,14 @@ export default {
             if (ext && ext.ai && ext.ai.stream && !ext.ai.finish) {
               this.calculateScroll(message);
             } else {
-              this.scroll();
+              setTimeout(() => {
+                this.scroll();
+              }, 500);
             }
           } else {
-            this.scroll();
+            setTimeout(() => {
+              this.scroll();
+            }, 500);
           }
         }
       }
@@ -321,7 +340,9 @@ export default {
           showList: true
         });
       });
-      this.scroll();
+      setTimeout(() => {
+        this.scroll();
+      }, 500);
     },
 
     checkTyping(message) {
@@ -542,6 +563,22 @@ export default {
       });
     },
 
+    selectVideoCallHandler() {
+      if (!this.isWeChat) {
+        uni.navigateTo({
+          url: '/pages_chat/roster/videocall/index?uid=' + this.uid
+        });
+      }
+    },
+
+    selectAudioCallHandler() {
+      if (!this.isWeChat) {
+        uni.navigateTo({
+          url: '/pages_chat/roster/audiocall/index?uid=' + this.uid
+        });
+      }
+    },
+
     fileChangeHandler(file, type) {
       const that = this;
       const im = getApp().getIM();
@@ -583,6 +620,10 @@ export default {
     },
 
     startRecord() {
+      if (!this.isWeChat) {
+        return;
+      }
+
       uni.authorize({
         scope: 'scope.record',
         success: function () {
@@ -625,6 +666,10 @@ export default {
     },
 
     stopRecord() {
+      if (!this.isWeChat) {
+        return;
+      }
+
       if (this.timer) {
         clearTimeout(this.timer);
         this.setData({

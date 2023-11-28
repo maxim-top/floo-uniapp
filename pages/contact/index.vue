@@ -47,7 +47,7 @@
           <view v-if="!isLogin">
             <text>你还没有登录，请先在设置页面进行登录操作</text>
           </view>
-          <view v-if="isLogin && rosterList.length === 0">
+          <view v-if="isLogin && groupList.length === 0">
             <text>你还没有加入群组，可以点击创建群组头像进行操作</text>
           </view>
         </view>

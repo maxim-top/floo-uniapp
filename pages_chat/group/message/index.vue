@@ -51,7 +51,7 @@
                 <text class="location_content">{{ addr }}</text>
               </view>
             </view>
-            <view class="c_content_more" v-if="type == 'text'">
+            <view class="c_content_more" v-if="type == 'text'" :style="{ 'margin-left': isWeChat ? '10rpx' : '0px' }">
               <text class="c_ext_title" v-if="isMarkdown" @tap="changeShowMarkdownFormat">{{ showMarkdownTitle }}</text>
               <text class="c_ext_title" v-if="ext" @tap="changeShowExt">{{ showExtTitle }}</text>
             </view>
@@ -127,7 +127,10 @@ export default {
         h3: 'line-height: normal; margin-block-start: 1em; margin-block-end: 1em;',
         h4: 'line-height: normal; margin-block-start: 1.33em; margin-block-end: 1.33em;',
         h5: 'line-height: normal; margin-block-start: 1.67em; margin-block-end: 1.67em;',
-        h6: 'line-height: normal; margin-block-start: 2.33em; margin-block-end: 2.33em;'
+        h6: 'line-height: normal; margin-block-start: 2.33em; margin-block-end: 2.33em;',
+        table: 'border: 1px solid gray; display: block; overflow-x: auto; border-collapse: collapse;',
+        th: 'border: 1px solid gray; padding-left: 5px; padding-right: 5px; min-width: 50px;',
+        td: 'border: 1px solid gray; padding-left: 5px; padding-right: 5px; min-width: 50px;'
       }
     };
   },

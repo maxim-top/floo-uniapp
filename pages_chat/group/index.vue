@@ -18,6 +18,7 @@
           </block>
         </view>
       </scroll-view>
+      <hr class="split_line" />
       <view class="inputer">
         <image class="voice" src="/static/pages/image/voice.png" @tap="voiceHandler"></image>
         <input v-if="!showvoice" @input="inputChangeHandler" class="input" type="text" confirm-type="send" @confirm="sendMessageHandler" :value="inputValue" />
@@ -221,7 +222,9 @@ export default {
       this.setData({
         messages: [].concat(allMessages)
       });
-      this.scroll();
+      setTimeout(() => {
+        this.scroll();
+      }, 500);
     },
 
     receiveNewMessage(message) {
@@ -240,10 +243,14 @@ export default {
             if (ext && ext.ai && ext.ai.stream && !ext.ai.finish) {
               this.calculateScroll(message);
             } else {
-              this.scroll();
+              setTimeout(() => {
+                this.scroll();
+              }, 500);
             }
           } else {
-            this.scroll();
+            setTimeout(() => {
+              this.scroll();
+            }, 500);
           }
         }
       }
@@ -310,7 +317,9 @@ export default {
           showList: true
         });
       });
-      this.scroll();
+      setTimeout(() => {
+        this.scroll();
+      }, 500);
     },
 
     checkTyping(message) {

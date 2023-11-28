@@ -16,7 +16,7 @@
         <text>选择群成员</text>
       </view>
       <view class="roster_list">
-        <view v-for="item in rosterList" :key="item.user_id" :data-idx="index" class="item" @tap="tapRoster">
+        <view v-for="(item, index) in rosterList" :key="item.user_id" :data-idx="index" class="item" @tap="tapRoster">
           <image :src="item.avatar" class="avatar"></image>
           <text class="uname">{{ item.nick_name || item.username }}</text>
           <image src="/static/pages/image/check.png" v-if="item.flag" class="check"></image>

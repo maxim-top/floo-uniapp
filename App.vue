@@ -1,5 +1,6 @@
 <script>
 import flooim from './sdk/index';
+import { toNumber } from './third/tools';
 
 const AUTO_LOGIN_DELAY = 2000; // ms
 const AUTO_LOGIN_TIMES_MAX = 3;
@@ -48,7 +49,14 @@ export default {
     // dnsServer: "https://dns.lanyingim.com/v2/app_dns",
     ws: true,
     autoLogin: true,
-    isWeChat: false
+    isWeChat: false,
+    callMap: new Map(),
+    callInfo: {
+      callId: '',
+      callInviteInfo: null,
+      pickupTime: 0,
+      caller: false
+    }
   },
 
   methods: {
@@ -119,6 +127,23 @@ export default {
       return this.globalData.im;
     },
 
+    getCallInfo() {
+      return this.globalData.callInfo;
+    },
+
+    setCallInfo(info) {
+      this.globalData.callInfo = Object.assign(this.globalData.callInfo, info);
+    },
+
+    clearCallInfo() {
+      this.globalData.callInfo = {
+        callId: '',
+        callInviteInfo: null,
+        pickupTime: 0,
+        caller: false
+      };
+    },
+
     isWeChatEnvironment() {
       return this.globalData.isWeChat;
     },
@@ -180,6 +205,7 @@ export default {
       const info = this.getLoginInfo();
       const isWeChat = this.isWeChatEnvironment();
       this.getIM().logout();
+      this.clearCallInfo();
       this.removeLoginInfo();
       uni.reLaunch({
         url: isWeChat ? '/pages/profile/index' : '/pages/account/login/index'
@@ -196,6 +222,11 @@ export default {
         onMessageRecalled: ({ mid }) => {
           console.log('消息被撤回：' + mid);
           this.deleteMessage(mid);
+        },
+        onRosterRTCMessage: (message) => {
+          if (!this.globalData.isWeChat) {
+            this.rosterCall(message);
+          }
         },
         flooNotice: (msg) => {
           const { category, desc } = msg;
@@ -286,6 +317,89 @@ export default {
     deleteMessage(mid) {
       // refresh ui
     },
+
+    removeDelayCall(callId) {
+      if (this.globalData.callMap.has(callId)) {
+        clearTimeout(this.globalData.callMap.get(callId));
+        this.globalData.callMap.delete(callId);
+      }
+    },
+
+    rosterCall(message) {
+      const im = this.getIM();
+      if (!im) return;
+
+      let that = this;
+      const { config, isHistory, isNative } = message;
+      const fromUid = toNumber(message.from);
+      const toUid = toNumber(message.to);
+      const uid = im.userManage.getUid();
+      const callStatus = im.rtcManage.getInCallStatus();
+
+      if (!isHistory && config && !isNative) {
+        if (config.action && config.action === 'call' && config.initiator) {
+          if (callStatus == false) {
+            this.globalData.callMap.set(
+              config.callId,
+              setTimeout(function () {
+                if (config.initiator !== uid && toUid === uid) {
+                  that.globalData.callInfo.callId = config.callId;
+                  that.globalData.callInfo.callInviteInfo = config;
+                  that.globalData.callInfo.caller = false;
+                  if (config.type == 1) {
+                    wx.navigateTo({
+                      url: '/pages_chat/roster/videocall/index?uid=' + config.initiator + '&caller=false'
+                    });
+                  } else {
+                    wx.navigateTo({
+                      url: '/pages_chat/roster/audiocall/index?uid=' + config.initiator + '&caller=false'
+                    });
+                  }
+                } else {
+                  // current user other device launch call，just display message and do nothing.
+                }
+              }, 1000)
+            );
+          } else {
+            if (config.initiator !== uid && toUid === uid) {
+              im.rtcManage.sendRTCMessage({
+                uid: fromUid,
+                content: 'busy',
+                config: JSON.stringify({
+                  action: 'hangup',
+                  callId: config.callId,
+                  initiator: config.initiator,
+                  pushMessageLocKey: 'callee_busy'
+                })
+              });
+            } else {
+              // should nerver come here.
+            }
+          }
+        } else if (config.action && config.action == 'pickup') {
+          this.removeDelayCall(config.callId);
+          if (fromUid === uid) {
+            // current use other device pickup call.
+            this.clearCallInfo();
+          } else {
+            im.rtcManage.joinRoom();
+          }
+        } else if (config.action && config.action == 'hangup') {
+          this.removeDelayCall(config.callId);
+          this.clearCallInfo();
+        } else if (config.action && config.action == 'record') {
+          this.removeDelayCall(config.callId);
+          if (fromUid === uid) {
+            // current user other device hangup call. just display message and do nothing.
+          } else {
+            if (callStatus) {
+              im.rosterManage.readRosterMessage(fromUid, message.id);
+            }
+          }
+        }
+      }
+    },
+
     removeIMListeners() {
       const im = this.getIM();
       if (im) {

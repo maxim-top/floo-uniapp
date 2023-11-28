@@ -55,8 +55,8 @@
     </view>
     <view>
       <uni-popup ref="popup" background-color="rgb(245,241,227)">
-        <view class="popup-content">
-          <view class="text-content">
+        <view :class="{ 'popup-content': isWechat, 'popup-content-h5': !isWechat }">
+          <view :class="{ 'text-content': isWechat, 'text-content-h5': !isWechat }">
             <text :style="'font-size: 34rpx; font-weight: bold;'">添加企业微信</text>
             <br />
             <text>沟通产品和技术细节，</text>

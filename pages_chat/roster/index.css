@@ -4,12 +4,18 @@
   background: #fefefe;
 }
 
+.split_line {
+  width: 120%;
+  border: none;
+  border-top: 1rpx solid #ddd;
+  margin-top: 4rpx;
+}
+
 .inputer {
   height: 100rpx;
-  width: 750rpx;
+  width: 100%;
   bottom: 20rpx;
   left: 0rpx;
-  border-top: 1rpx solid #ccc;
   background: white;
   display: flex;
 }
@@ -22,7 +28,7 @@
 }
 .inputer .input {
   margin: 8rpx 20rpx 10rpx 20rpx;
-  width: 550rpx;
+  width: calc(100% - 120rpx);
   height: 80rpx;
   border: 1px solid #ddd;
   border-radius: 8rpx;
@@ -32,7 +38,7 @@
 }
 .inputer .recorder {
   margin: 8rpx 20rpx 10rpx 20rpx;
-  width: 550rpx;
+  width: calc(100% - 120rpx);
   height: 80rpx;
   border: 1px solid white;
   border-radius: 8rpx;

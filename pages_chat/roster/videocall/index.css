@@ -1,0 +1,117 @@
+.container {
+  display: block;
+  padding: 0 30rpx;
+  padding-top: 64px;
+  /* background: #F7F7F7; */
+  padding-bottom: 100rpx;
+  /* min-height: 800px; */
+  padding-top: 64px;
+  text-align: center;
+}
+
+.call_time {
+  position: relative;
+  z-index: 3;
+  font-size: 28rpx;
+}
+
+.header_view {
+  position: relative;
+  margin-top: 120rpx;
+  text-align: center;
+  margin-bottom: 160rpx;
+  z-index: 3;
+  color: white;
+}
+
+.avatar {
+  width: 180rpx;
+  height: 180rpx;
+}
+
+.header_view .nick {
+  line-height: 58rpx;
+  font-size: 42rpx;
+  padding-top: 20rpx;
+}
+
+.header_view .nick .nick_text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.header_view .nick .nick_tips {
+  font-size: 30rpx;
+}
+
+.buttons {
+  position: relative;
+  display: flex;
+  justify-content: space-evenly;
+  z-index: 3;
+}
+
+.button_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120rpx;
+  color: white;
+  line-height: 80rpx;
+}
+
+.button_hangup {
+  position: relative;
+  padding-top: 50rpx;
+  z-index: 3;
+}
+
+.button_item .button_avatar {
+  max-width: 80rpx;
+  max-height: 80rpx;
+  border-radius: 50%;
+  padding: 10rpx 10rpx;
+  background-color: rgb(248, 248, 248);
+}
+
+.remote_video_panel {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0rpx;
+  top: 0rpx;
+  border-radius: 5px;
+  z-index: 1;
+  background: rgb(246, 246, 246);
+}
+
+/deep/ uni-video {
+  height: 100%;
+  width: 100%;
+}
+
+/deep/ .uni-video-bar {
+  display: none;
+}
+
+/deep/ .uni-video-cover-play-button {
+  display: none;
+}
+
+/deep/ .uni-video-cover-duration {
+  display: none;
+}
+
+.local_video_panel {
+  position: absolute;
+  height: 25%;
+  width: 25%;
+  right: 0;
+  top: 0rpx;
+  margin-right: 6rpx;
+  margin-top: 6rpx;
+  border-radius: 10rpx;
+  z-index: 2;
+  background: rgb(246, 246, 246);
+}

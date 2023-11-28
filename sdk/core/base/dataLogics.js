@@ -10,7 +10,7 @@ import { bind, fire } from '../../utils/cusEvent';
 import { groupStore, infoStore, messageStore, noticeStore, recentStore, rosterStore } from '../../utils/store';
 import * as io from './io/httpIo';
 import { metaToCustomer, numToString, toNumber, metaToRtcSignalCustomer } from '../../utils/tools';
-import { makeReadAllMessage, makeReadMessageAck } from './messageMaker';
+import { makeReadAllMessage, makeReadMessageAck, makeRosterRTCMessage } from './messageMaker';
 import { STATIC_MESSAGE_OPTYPE, STATIC_MESSAGE_TYPE, STATIC_MESSAGE_STATUS } from '../../utils/static';
 var JSONBigString = require('json-bigint');
 
@@ -202,15 +202,52 @@ bind('rtcVideoRoomSignal', (meta) => {
   fire('socketClsOnSignal', meta_cus);
 });
 
+const dealRosterRTCMessage = (message) => {
+  const { config, isHistory } = message;
+  if (config && config.action) {
+    let inCall = messageStore.getInCallStatus();
+    const uid = infoStore.getUid();
+
+    if (config.action === 'hangup') {
+      if (inCall && uid != toNumber(message.from) && uid == config.initiator) {
+        if (config.peerDrop && config.peerDrop == true) {
+          // do nothing here.
+        } else {
+          const record = makeRosterRTCMessage({
+            uid: toNumber(message.from),
+            content: message.content,
+            config: JSON.stringify({
+              action: 'record',
+              callId: config.callId,
+              initiator: config.initiator,
+              peerDrop: config.peerDrop,
+              pushMessageLocKey: config.pushMessageLocKey,
+              pushMessageLocArgs: config.pushMessageLocArgs
+            })
+          });
+          const meta = record.payload.meta;
+          messageStore.saveSendingRosterMessage(meta);
+          fire('sendMessage', record);
+        }
+      }
+    } else if (config.action === 'record' && config.initiator == uid) {
+      if (message.from != uid) {
+        message.to = message.from;
+        message.from = numToString(config.initiator);
+      }
+    }
+
+    if (!isHistory) {
+      if (config.action === 'hangup' || config.action === 'record') {
+        messageStore.saveInCallStatus(false);
+      }
+    }
+  }
+};
+
 //// messages ////////////////////////////////////////////
 bind('imRosterMessage', (meta) => {
   const meta_cus = metaToCustomer(meta);
-
-  // TODO later. next version will support rtc.
-  if (meta_cus.type === 'rtc') {
-    return;
-  }
-
   if (meta.isHistory) {
     meta_cus.isHistory = true;
   }
@@ -233,6 +270,9 @@ bind('imRosterMessage', (meta) => {
       });
     }
   } else {
+    if (meta_cus.type === 'rtc') {
+      messageStore.saveRosterRTCContentHandleMessage(meta_cus);
+    }
     messageStore.saveRosterMessage(meta_cus);
     meta_cus.toType = 'roster';
     recentStore.saveRecent(meta_cus);
@@ -249,6 +289,9 @@ bind('imRosterMessage', (meta) => {
   // fire('sendMessage', smessage); //表示消息已送达
 
   if (meta_cus.type === 'rtc') {
+    dealRosterRTCMessage(meta_cus);
+    messageStore.saveRosterMessage(meta_cus);
+    recentStore.saveRecent(meta_cus);
     fire('onRosterRTCMessage', meta_cus);
   }
   fire('onRosterMessage', meta_cus);

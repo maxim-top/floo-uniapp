@@ -1,6 +1,6 @@
 {
   "name": "lanying-im-uniapp",
-  "version": "3.0.1",
+  "version": "3.0.3",
   "description": "lanying-im uniapp version",
   "main": "app.js",
   "repository": {
@@ -31,7 +31,7 @@
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "format": "yarn prettier -w .",
+    "format": "yarn prettier -w ./pages ./pages_chat ./sdk ./third",
     "sdk": "webpack --config=webpack.config.js",
     "release": "yarn sdk && ./floo.sh lanying-im-uniapp",
     "package": "cd unpackage/dist/build/ && tar zcvf ../../../lanying-im-uniapp.tar.gz h5 && cd - "

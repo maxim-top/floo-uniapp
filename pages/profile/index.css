@@ -141,6 +141,22 @@
   background-color: rgb(245, 241, 227);
 }
 
+.popup-content-h5 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 210px;
+  flex-direction: row;
+  padding: 0 20rpx 0 0;
+  font-size: 32rpx;
+  background-color: rgb(245, 241, 227);
+}
+
+.popup-content-h5 .text-content-h5 {
+  margin-top: 20px;
+  padding: 30rpx 40rpx 20rpx 0;
+}
+
 .popup-content .text-content {
   padding: 30rpx 40rpx 20rpx 0;
 }

@@ -22,10 +22,10 @@
         <text>联系商务 400-666-0162</text>
       </view>
       <view class="txtFrame" style="margin-top: 50rpx">
-        <text>蓝莺IM v3.0.1</text>
+        <text>蓝莺IM v3.0.3</text>
       </view>
       <view class="txtFrame" style="margin-top: 15rpx">
-        <text>Floo/SDK v3.0.1</text>
+        <text>Floo/SDK v3.0.3</text>
       </view>
     </view>
     <view class="btm">
