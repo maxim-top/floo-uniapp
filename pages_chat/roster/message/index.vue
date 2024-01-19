@@ -11,7 +11,7 @@
         </view>
         <view class="c_content_all">
           <view class="c_content">
-            <view v-if="type == 'text'" @longpress="coptText">
+            <view v-if="type == 'text'" @longpress="copyText">
               <view v-if="showMarkdown">
                 <mp-html :content="showMarkdownContent" :tag-style="tagStyle" />
               </view>
@@ -107,8 +107,6 @@ export default {
       showMarkdownTitle: ' 显示原文 ',
       isMarkdown: false,
       showMarkdown: false,
-      hasMarked: false,
-      marked: null,
       addHlgs: false,
       markContent: '',
 
@@ -116,10 +114,13 @@ export default {
       showContent: '',
       appendContent: '',
       appendTimer: null,
+      lastSliceStreamTime: 0,
 
       showMarkdownContent: '',
-      appendMarkdownContent: '',
+      showTotalContent: '',
+      showAppendContent: '',
       appendMarkdownTimer: null,
+      lastMarkdownSliceStreamTime: 0,
 
       tagStyle: {
         h1: 'line-height: normal; margin-block-start: 0.67em; margin-block-end: 0.67em;',
@@ -279,15 +280,12 @@ export default {
 
     if (this.message.ext && this.message.ext.length && this.isAIStreamFinish(this.message.ext)) {
       if (this.showMarkdown) {
-        this.setData({
-          appendMarkdownContent: this.markContent
-        });
-        this.calculateMarkdownAppend(this.markContent, this.message.ext, true);
+        this.calculateMarkdownAppend(this.message.content, this.message.ext);
       }
       this.setData({
         appendContent: this.content
       });
-      this.calculateAppend(this.content, this.message.ext, true);
+      this.calculateAppend(this.content, this.message.ext);
     } else {
       this.setData({
         showMarkdownContent: this.markContent,
@@ -296,7 +294,7 @@ export default {
     }
   },
   methods: {
-    coptText: function () {
+    copyText: function () {
       uni.setClipboardData({
         data: this.content,
         success() {
@@ -498,55 +496,44 @@ export default {
       });
     },
 
-    calculateContent(content) {
+    parseMarkdownContent(content) {
       let that = this;
+      let marked = null;
+      let hasCode = this.hasCodeBlock(content);
+      if (hasCode) {
+        marked = new Marked(
+          markedHighlight({
+            langPrefix: 'hljs language-',
+            highlight(code, lang) {
+              let language = hljs.getLanguage(lang) ? lang : 'plaintext';
+              if (language === 'plaintext') {
+                that.setData({
+                  addHlgs: true
+                });
+                return hljs.highlightAuto(code).value;
+              }
+              return hljs.highlight(code, { language }).value;
+            }
+          })
+        );
+      } else {
+        marked = new Marked();
+      }
+      let newContent = marked.parse(content);
+      if (this.addHlgs) {
+        newContent = newContent.replaceAll('<code', '<code class="hljs"');
+      } else {
+        newContent = newContent.replaceAll('<pre><code', '<pre><code class="hljs"');
+      }
+      return newContent;
+    },
+
+    calculateContent(content) {
       let isMarkdown = this.isMarkdownFormat(content);
       if (isMarkdown) {
-        let marked = null;
-        let hasCode = this.hasCodeBlock(content);
-        if (hasCode) {
-          marked = new Marked(
-            markedHighlight({
-              langPrefix: 'hljs language-',
-              highlight(code, lang) {
-                let language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                if (language === 'plaintext') {
-                  that.setData({
-                    addHlgs: true
-                  });
-                  return hljs.highlightAuto(code).value;
-                }
-                return hljs.highlight(code, { language }).value;
-              }
-            })
-          );
-        } else {
-          marked = new Marked();
-        }
-        if (this.hasMarked) {
-          let newContent = marked.parse(content);
-          if (this.addHlgs) {
-            newContent = newContent.replaceAll('<code', '<code class="hljs"');
-          } else {
-            newContent = newContent.replaceAll('<pre><code', '<pre><code class="hljs"');
-          }
-          this.setData({
-            appendMarkdownContent: newContent.slice(this.markContent.length),
-            markContent: newContent
-          });
-        } else {
-          let markContent = marked.parse(content);
-          if (this.addHlgs) {
-            markContent = markContent.replaceAll('<code', '<code class="hljs"');
-          } else {
-            markContent = markContent.replaceAll('<pre><code', '<pre><code class="hljs"');
-          }
-          this.setData({
-            markContent,
-            hasMarked: true
-          });
-        }
         this.setData({
+          markContent: this.parseMarkdownContent(content),
+          showAppendContent: content,
           showMarkdown: true
         });
       }
@@ -576,11 +563,23 @@ export default {
 
     calculateAppend(content, extension, showAll = false) {
       let ext = JSONBigString.parse(extension);
-      let that = this;
       if (ext && ext.ai && ext.ai.stream && ext.ai.stream_interval) {
         this.appendTimer && clearInterval(this.appendTimer);
-        //每一次计时周期增加两个字符展示。
-        let period = (ext.ai.stream_interval * 1000) / (this.appendContent.length / 2);
+        //每一次计时周期增加一个字符展示。
+        let count = 1;
+        let period = (ext.ai.stream_interval * 1000) / this.appendContent.length;
+        if (period < 40) {
+          period = 40;
+          if (showAll && period * this.showAppendContent.length > 20000) {
+            count = Math.ceil(this.showAppendContent.length / 500);
+          }
+        }
+        if (showAll) {
+          this.setData({
+            lastSliceStreamTime: Math.ceil((period * this.showAppendContent.length) / (1000 * count))
+          });
+        }
+        let that = this;
         let appendTimer = setInterval(() => {
           if (that.appendContent.length <= 0) {
             clearInterval(that.appendTimer);
@@ -591,8 +590,8 @@ export default {
               ext: showAll ? extension : that.ext
             });
           } else {
-            let append = that.appendContent.slice(0, 2);
-            let remain = that.appendContent.slice(2);
+            let append = that.appendContent.slice(0, count);
+            let remain = that.appendContent.slice(count);
             that.setData({
               showContent: that.showContent + append,
               appendContent: remain
@@ -611,26 +610,39 @@ export default {
 
     calculateMarkdownAppend(markContent, extension, showAll = false) {
       let ext = JSONBigString.parse(extension);
-      let that = this;
       if (ext && ext.ai && ext.ai.stream && ext.ai.stream_interval) {
         this.appendMarkdownTimer && clearInterval(this.appendMarkdownTimer);
-        //每一次计时周期增加两个字符展示。
-        let period = (ext.ai.stream_interval * 1000) / (this.appendMarkdownContent.length / 2);
+        //每一次计时周期增加一个字符展示。
+        let count = 1;
+        let period = (ext.ai.stream_interval * 1000) / this.showAppendContent.length;
+        if (period < 40) {
+          period = 40;
+          if (showAll && period * this.showAppendContent.length > 20000) {
+            count = Math.ceil(this.showAppendContent.length / 500);
+          }
+        }
+        if (showAll) {
+          this.setData({
+            lastMarkdownSliceStreamTime: Math.ceil((period * this.showAppendContent.length) / (1000 * count))
+          });
+        }
+        let that = this;
         let appendMarkdownTimer = setInterval(() => {
-          if (that.appendMarkdownContent.length <= 0) {
+          if (that.showAppendContent.length <= 0) {
             clearInterval(that.appendMarkdownTimer);
             that.setData({
               appendMarkdownTimer: null,
-              showMarkdownContent: markContent,
+              showMarkdownContent: that.parseMarkdownContent(that.showTotalContent),
               showContent: showAll ? that.content : that.showContent,
               ext: showAll ? extension : that.ext
             });
           } else {
-            let append = that.appendMarkdownContent.slice(0, 2);
-            let remain = that.appendMarkdownContent.slice(2);
+            let append = that.showAppendContent.slice(0, count);
+            let remain = that.showAppendContent.slice(count);
             that.setData({
-              showMarkdownContent: that.showMarkdownContent + append,
-              appendMarkdownContent: remain
+              showMarkdownContent: that.parseMarkdownContent(that.showTotalContent + append),
+              showTotalContent: that.showTotalContent + append,
+              showAppendContent: remain
             });
           }
         }, period);
@@ -639,19 +651,33 @@ export default {
         });
       } else {
         this.setData({
-          showMarkdownContent: markContent
+          showMarkdownContent: this.markContent
         });
       }
     },
 
+    getLastSliceStreamTime() {
+      return Math.max(this.lastSliceStreamTime, this.lastMarkdownSliceStreamTime);
+    },
+
     messageContentAppend(message) {
+      let oldFlag = this.isMarkdown;
       this.calculateContent(message.content);
+      if (false == oldFlag && true == this.isMarkdown) {
+        this.setData({
+          showTotalContent: this.showContent,
+          showMarkdownContent: this.parseMarkdownContent(this.showContent)
+        });
+      }
       if (message.ext && message.ext.length && this.isAIStream(message.ext)) {
         if (this.isMarkdown) {
-          this.calculateMarkdownAppend(this.markContent, message.ext);
+          this.setData({
+            showAppendContent: message.content.slice(this.showTotalContent.length)
+          });
+          this.calculateMarkdownAppend(message.content, message.ext);
         }
         this.setData({
-          appendContent: this.appendContent + message.appendedContent
+          appendContent: message.content.slice(this.showContent.length)
         });
         this.calculateAppend(message.content, message.ext);
       } else {
@@ -663,10 +689,20 @@ export default {
     },
 
     messageReplace(message) {
+      let oldFlag = this.isMarkdown;
       this.calculateContent(message.content);
+      if (false == oldFlag && true == this.isMarkdown) {
+        this.setData({
+          showTotalContent: this.showContent,
+          showMarkdownContent: this.parseMarkdownContent(this.showContent)
+        });
+      }
       if (message.ext && message.ext.length && this.isAIStream(message.ext)) {
         if (this.isMarkdown) {
-          this.calculateMarkdownAppend(this.markContent, message.ext, true);
+          this.setData({
+            showAppendContent: message.content.slice(this.showTotalContent.length)
+          });
+          this.calculateMarkdownAppend(message.content, message.ext, true);
         }
         this.setData({
           appendContent: message.content.slice(this.showContent.length)

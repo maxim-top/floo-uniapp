@@ -26,6 +26,18 @@ export default {
     if (!this.globalData.initWindowParams) {
       this.setNavPosition();
     }
+    let options = uni.getEnterOptionsSync();
+    if (options && options.query && options.query.link) {
+      if (this.globalData.intent.oldLink != options.query.link) {
+        this.globalData.intent.link = options.query.link;
+        this.globalData.intent.hasParseLink = false;
+      }
+
+      if (options.query.code && this.globalData.intent.oldCode != options.query.code) {
+        this.globalData.intent.code = options.query.code;
+        this.globalData.intent.hasParseCode = false;
+      }
+    }
     this.ensureIMLogin();
   },
 
@@ -49,6 +61,14 @@ export default {
     // dnsServer: "https://dns.lanyingim.com/v2/app_dns",
     ws: true,
     autoLogin: true,
+    intent: {
+      hasParseLink: false,
+      hasParseCode: false,
+      link: null,
+      code: null,
+      oldLink: null,
+      oldCode: null
+    },
     isWeChat: false,
     callMap: new Map(),
     callInfo: {
@@ -73,7 +93,15 @@ export default {
       //通常来讲，初始化过程会非常快，但由于涉及网络调用，这个时间并无法保证；如果你的业务非常依赖初始化成功，请等待；
       if (im && im.isReady && im.isReady()) {
         console.log('flooim 初始化成功 ', times);
-        this.imLogin();
+        if (this.globalData.intent.link && !this.globalData.intent.hasParseLink) {
+          this.parseLink();
+        } else {
+          if (this.globalData.intent.code && !this.globalData.intent.hasParseCode) {
+            this.codeLogin();
+          } else {
+            this.imLogin();
+          }
+        }
         return;
       }
       if (times < INIT_CHECK_TIMES_MAX) {
@@ -83,8 +111,72 @@ export default {
       }
     },
 
+    parseLink() {
+      const im = this.getIM();
+      if (!im) return;
+
+      const linkServer = im.sysManage.getLinkServer();
+      let that = this;
+      im.sysManage
+        .aysncParseLink(linkServer, {
+          link: this.globalData.intent.link
+        })
+        .then((res) => {
+          that.globalData.intent.add_id = res.app_id;
+          that.globalData.intent.uid = parseInt(res.uid);
+          that.globalData.intent.text = res.text;
+          that.globalData.intent.type = res.type;
+          that.globalData.intent.parseLink = true;
+          if (that.getAppid() == that.globalData.intent.add_id) {
+            if (that.globalData.intent.code && !that.globalData.intent.hasParseCode) {
+              that.codeLogin();
+            } else {
+              that.imLogin();
+            }
+          } else {
+            that.setupIM(that.globalData.intent.add_id);
+          }
+        })
+        .catch((err) => {
+          if (err.data) {
+            console.log('Link无效： ' + err.data.code + ':' + err.data.message);
+          }
+          uni.showToast({ title: 'Link无效 : ' + err.message });
+        });
+      this.globalData.intent.oldLink = this.globalData.intent.link;
+    },
+
+    codeLogin() {
+      const im = this.getIM();
+      if (!im) return;
+
+      let that = this;
+      im.userManage
+        .asyncSendSecretInfo({
+          code: this.globalData.intent.code
+        })
+        .then((res) => {
+          const info = JSON.parse(res.secret_text);
+          that.saveLoginInfo({
+            username: info.username,
+            password: info.password
+          });
+          that.imLogin();
+        })
+        .catch((err) => {
+          if (err.data) {
+            console.log('登录失败, code无效 : ' + err.data.code + ':' + err.data.message);
+          }
+          uni.showToast({ title: 'code无效 : ' + err.message });
+        });
+      this.globalData.intent.oldCode = this.globalData.intent.code;
+      this.globalData.intent.hasParseCode = true;
+    },
+
     imLogin() {
       const im = this.getIM();
+      if (!im) return;
+
       if (!this.isIMLogin()) {
         const loginInfo = this.getLoginInfo();
 
@@ -104,6 +196,7 @@ export default {
         }
       }
     },
+
     initFlooIM() {
       const appid = this.getAppid();
       const dnsServer = this.globalData.dnsServer;
@@ -347,11 +440,11 @@ export default {
                   that.globalData.callInfo.callInviteInfo = config;
                   that.globalData.callInfo.caller = false;
                   if (config.type == 1) {
-                    wx.navigateTo({
+                    uni.navigateTo({
                       url: '/pages_chat/roster/videocall/index?uid=' + config.initiator + '&caller=false'
                     });
                   } else {
-                    wx.navigateTo({
+                    uni.navigateTo({
                       url: '/pages_chat/roster/audiocall/index?uid=' + config.initiator + '&caller=false'
                     });
                   }
@@ -416,9 +509,15 @@ export default {
       const info = this.getLoginInfo();
       const username = info ? info.username : '';
 
-      wx.switchTab({
-        url: '/pages/contact/index'
-      });
+      if (this.globalData.intent.uid) {
+        uni.navigateTo({
+          url: '/pages_chat/roster/index?uid=' + this.globalData.intent.uid
+        });
+      } else {
+        uni.switchTab({
+          url: '/pages/contact/index'
+        });
+      }
     },
 
     onLoginFail(msg) {

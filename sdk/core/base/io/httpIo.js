@@ -3,6 +3,9 @@ import { request } from '../../../utils/request';
 // dns
 const getServers = (url, params) => request(url, 'get', params, ['app_id'], true);
 
+// link
+const parseLink = (url, params) => request(url, 'get', params, ['link'], true);
+
 // logins
 const tokenUser = (params) => request('/token/user', 'post', params, [['mobile', 'name'], 'password']);
 const tokenId = (params) => request('/token/id', 'post', params, ['user_id', 'password']);
@@ -10,6 +13,8 @@ const userRegister = (params) => request('/user/register/v2', 'post', params, ['
 const userRegisterAnonymous = (params) => request('/user/register/anonymous', 'post', params, ['username', 'password']);
 const userBindMobile = (params) => request('/app/user/mobile_bind', 'post', params, ['captcha', 'mobile']);
 const userUpdateMobile = (params) => request('/app/user/mobile_update', 'post', params, ['mobile']);
+const userGenerateSecretInfo = (params) => request('/app/secret_info', 'post', params, ['expire_seconds', 'secret_text']);
+const userSendSecretInfo = (params) => request('/app/secret_info', 'get', params, [], true);
 
 const userSendSms = (params) => request('/app/captcha/sms', 'get', params, ['mobile'], true);
 const userNameCheck = (params) => request('/app/user/name_check', 'get', params, ['username'], true);
@@ -18,6 +23,9 @@ const userMobileBindSign = (params) => request('/app/user/mobile_bind_with_sign'
 const userMobileLogin = (params) => request('/app/user/info_pwd', 'get', params, ['captcha', 'mobile'], true);
 const captchaImagePost = (params) => request('/app/captcha/image', 'post', params, []);
 const captchaSms = (params) => request('/app/captcha/sms_web', 'get', params, ['captcha', 'image_id', 'mobile'], true);
+
+// wx url link
+const generateWXUrlLink = (params) => request('/app/generate_url_link', 'post', params, ['path', 'query']);
 
 // rosters
 const rosterAccept = (params) => request('/roster/accept', 'post', params, ['user_id'], true);
@@ -105,6 +113,7 @@ const userSettings = () => request('/user/settings', 'get', {}, []);
 const userSettingsPost = (params) => request('/user/settings', 'post', params, ['user_id']);
 const userSounds = (params) => request('/user/sounds', 'post', params, ['value']);
 const userVibratory = (params) => request('/user/vibratory', 'post', params, ['value']);
+const userChangePassword = (params) => request('/user/change_password', 'post', params, ['old_password', 'new_password']);
 
 const bindDeviceToken = (params) => request('/user/token/bind', 'post', params, ['device_sn', 'device_token', 'notifier_name']);
 const unbindDeviceToken = (params) => request('/user/token/unbind', 'post', params, [], true);
@@ -139,11 +148,14 @@ const wechatBind = (params) => request('/app/wechat/bind', 'post', params, ['ope
 
 export {
   getServers,
+  parseLink,
   tokenUser,
   tokenId,
   userRegister,
   userRegisterAnonymous,
   userBindMobile,
+  userGenerateSecretInfo,
+  userSendSecretInfo,
   userSendSms,
   userNameCheck,
   userMobileBind,
@@ -152,6 +164,7 @@ export {
   userUpdateMobile,
   captchaImagePost,
   captchaSms,
+  generateWXUrlLink,
   rosterAccept,
   rosterApply,
   rosterDecline,
@@ -227,6 +240,7 @@ export {
   userSettingsPost,
   userSounds,
   userVibratory,
+  userChangePassword,
   bindDeviceToken,
   unbindDeviceToken,
   userDelete,

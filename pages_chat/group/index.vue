@@ -260,24 +260,24 @@ export default {
       }
     },
 
-    calculateScroll(message) {
+    calculateScroll(message, maxInterval = 0) {
       if (message.ext) {
-        let that = this;
         let ext = JSONBigString.parse(message.ext);
         if (ext && ext.ai && ext.ai.stream) {
           this.scrollTimer && clearInterval(this.scrollTimer);
           let count = ext.ai.stream_interval * 5;
-          let start = 0;
-          if (ext.ai.seq) {
-            start = ext.ai.seq * 10;
+          if (maxInterval > ext.ai.stream_interval) {
+            count = maxInterval * 5;
           }
           if (count) {
+            let that = this;
+            let start = 0;
             let scrollTimer = setInterval(() => {
               that.scroll(start++);
               if (count-- <= 0) {
                 clearInterval(that.scrollTimer);
                 that.setData({
-                  scrollTimer
+                  scrollTimer: null
                 });
               }
             }, 200);
@@ -290,18 +290,24 @@ export default {
     },
 
     receiveContentAppendedMessage(message) {
-      this.calculateScroll(message);
-      let msg = this.$refs.vMessages.reverse().find((item) => item.message.id == message.id);
-      if (msg) {
-        msg.messageContentAppend(message);
+      if (this.$refs.vMessages) {
+        let msg = this.$refs.vMessages.reverse().find((item) => item.message.id == message.id);
+        if (msg) {
+          msg.messageContentAppend(message);
+          this.calculateScroll(message);
+        }
       }
     },
 
     receiveReplaceMessage(message) {
-      this.calculateScroll(message);
-      let msg = this.$refs.vMessages.reverse().find((item) => item.message.id == message.id);
-      if (msg) {
-        msg.messageReplace(message);
+      if (this.$refs.vMessages) {
+        let msg = this.$refs.vMessages.reverse().find((item) => item.message.id == message.id);
+        if (msg) {
+          msg.messageReplace(message);
+          setTimeout(() => {
+            this.calculateScroll(message, msg.getLastSliceStreamTime());
+          }, 200);
+        }
       }
     },
 
@@ -346,7 +352,7 @@ export default {
     },
 
     scroll(count = 0) {
-      const scrolltop = this.messages.length * 1000 + count;
+      const scrolltop = this.messages.length * 10000 + count * 10;
       this.setData({
         scrolltop
       });

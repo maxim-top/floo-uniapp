@@ -376,9 +376,11 @@ export default {
   downloadAudio,
   downloadChatFile,
   getServers: dnsManager.getServers,
+  getLinkServer: infoStore.getLinkServer,
   asyncWechatUnbind: io.wechatUnbind,
   asyncWechatIsbind: io.wechatIsbind,
   asyncWechatBind: io.wechatBind,
+  aysncParseLink: io.parseLink,
 
   deleteConversation
 };

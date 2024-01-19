@@ -22,14 +22,14 @@
         <text>联系商务 400-666-0162</text>
       </view>
       <view class="txtFrame" style="margin-top: 50rpx">
-        <text>蓝莺IM v3.0.3</text>
+        <text>蓝莺IM v3.0.5</text>
       </view>
       <view class="txtFrame" style="margin-top: 15rpx">
-        <text>Floo/SDK v3.0.3</text>
+        <text>Floo/SDK v3.0.5</text>
       </view>
     </view>
     <view class="btm">
-      <text>© 2019-2023 美信拓扑</text>
+      <text>© 2019-2024 美信拓扑</text>
     </view>
   </view>
 </template>

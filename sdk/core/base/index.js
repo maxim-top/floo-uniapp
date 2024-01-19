@@ -12,9 +12,17 @@ let loginSwap = null;
 let sdkOk = false;
 let isLogin = false;
 
-const webim = function ({ autoLogin = true, dnsServer = 'https://dns.lanyingim.com/v2/app_dns', appid = 'welovemaxim', ws = false, logLevel = 'debug' }) {
+const webim = function ({
+  autoLogin = true,
+  dnsServer = 'https://dns.lanyingim.com/v2/app_dns',
+  appid = 'welovemaxim',
+  ws = false,
+  logLevel = 'debug',
+  linkServer = 'https://lanying.link/info'
+}) {
   log.setLogLevel(logLevel);
   infoStore.saveAppid(appid);
+  infoStore.saveLinkServer(linkServer);
   dnsManager
     .asyncGetDns(dnsServer, appid, ws)
     .then((res) => {
