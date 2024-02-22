@@ -101,6 +101,14 @@
             <text class="rtext">{{ groupInfo.description }}</text>
           </view>
         </view>
+        <view class="item" @tap="goGroupMemberList">
+          <view class="sleft">
+            <text class="ltext">群成员列表</text>
+          </view>
+          <view class="sright">
+            <image class="right" src="/static/pages/image/right.png"></image>
+          </view>
+        </view>
       </view>
     </view>
     <view class="buttonFrame" @tap="goChat">
@@ -197,6 +205,14 @@ export default {
       } else {
         uni.navigateTo({
           url: '/pages_chat/group/index?gid=' + this.gid
+        });
+      }
+    },
+
+    goGroupMemberList() {
+      if (!this.uid) {
+        uni.navigateTo({
+          url: '/pages_chat/group/memberlist/index?gid=' + this.gid
         });
       }
     }

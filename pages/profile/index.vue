@@ -19,6 +19,14 @@
       </view>
     </view>
     <view class="container">
+      <view class="item" @tap="goSwitchAccount">
+        <view class="sleft">
+          <text>切换账号</text>
+        </view>
+        <view class="sright">
+          <image class="right" src="/static/pages/image/right.png"></image>
+        </view>
+      </view>
       <view class="item" @tap="goProfile">
         <view class="sleft">
           <text>账号管理</text>
@@ -106,10 +114,13 @@ export default {
   },
   onShow: function () {
     const isLogin = getApp().isIMLogin();
+    const im = getApp().getIM();
+    if (!im) return;
+
     this.setData({
       isLogin
     });
-    if (isLogin && !this.profile.user_id) {
+    if (isLogin && (!this.profile.user_id || this.profile.user_id != im.userManage.getUid())) {
       this.fetchAvatar();
     }
 
@@ -291,6 +302,14 @@ export default {
       } else {
         uni.navigateTo({
           url: '../account/loginreminder/index'
+        });
+      }
+    },
+
+    goSwitchAccount() {
+      if (this.isLogin) {
+        uni.navigateTo({
+          url: './switch_account/index'
         });
       }
     },

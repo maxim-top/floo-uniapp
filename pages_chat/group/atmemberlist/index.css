@@ -1,0 +1,61 @@
+.container {
+  padding: 0rpx 30rpx;
+  background: #fefefe;
+}
+
+.member_list {
+  margin-top: 20rpx;
+  width: 100%;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+}
+
+.item {
+  height: 80rpx;
+  border-top: 1rpx solid #eee;
+  position: relative;
+  padding-left: 20rpx;
+}
+.item .avatar {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 25rpx;
+  float: left;
+  margin: 15rpx 20rpx 0 0;
+}
+
+.item .uname {
+  float: left;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 28rpx;
+  color: #333;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 66.6%;
+  padding-right: 20rpx;
+}
+
+.check {
+  position: absolute;
+  width: 34rpx;
+  height: 24rpx;
+  right: 20rpx;
+  top: 28rpx;
+}
+
+.multi_check_button {
+  height: 64rpx;
+  z-index: 2;
+  position: fixed;
+  text-align: right;
+  right: 0;
+}
+
+.multi_check_button .back_kmg {
+  width: 40rpx;
+  height: 40rpx;
+  margin-top: 20rpx;
+  margin-right: 30rpx;
+}

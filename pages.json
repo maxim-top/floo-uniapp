@@ -59,6 +59,10 @@
     {
       "path": "pages/profile/detail/index",
       "style": {}
+    },
+    {
+      "path": "pages/profile/switch_account/index",
+      "style": {}
     }
   ],
   "subPackages": [
@@ -103,6 +107,14 @@
         },
         {
           "path": "group/join/index",
+          "style": {}
+        },
+        {
+          "path": "group/memberlist/index",
+          "style": {}
+        },
+        {
+          "path": "group/atmemberlist/index",
           "style": {}
         }
       ]

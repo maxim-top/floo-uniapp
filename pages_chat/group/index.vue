@@ -95,7 +95,9 @@ export default {
       timer: null,
       recordFile: '',
       isWeChat: false,
-      scrollTimer: null
+      scrollTimer: null,
+      memberList: [],
+      mentionSelectedUids: []
     };
   },
 
@@ -125,9 +127,10 @@ export default {
       });
   },
   onLoad: function (options) {
-    const { gid } = options;
+    const { gid, content } = options;
     this.setData({
-      gid: gid - 0
+      gid: gid - 0,
+      inputValue: content
     });
     const im = getApp().getIM();
     if (!im) return;
@@ -163,6 +166,8 @@ export default {
       ww: uni.getSystemInfoSync().windowWidth > 560 ? 90 : 180,
       menuButtonWidth: getApp().getMenuButtonWidth()
     });
+
+    this.getMemberList();
   },
   methods: {
     onMessageStatusChanged: ({ mid }) => {
@@ -360,13 +365,33 @@ export default {
 
     sendMessageHandler() {
       const content = this.inputValue;
+      const im = getApp().getIM();
+      if (!im) return;
 
       if (content) {
-        getApp().getIM().sysManage.sendGroupMessage({
-          content,
-          gid: this.gid
-          // ext: "自定义消息字段",
-        });
+        if (this.mentionSelectedUids.length) {
+          const mentionAll = false;
+          const mentionList = this.mentionSelectedUids.map((x) => x - 0);
+          const mentionedMessage = '';
+          const pushMessage = '';
+          const uid = im.userManage.getUid();
+          const senderNickName = this.memberList.filter((item) => item.user_id === uid)[0].display_name;
+          im.sysManage.sendMentionMessage({
+            gid: this.gid,
+            txt: content,
+            mentionAll,
+            mentionList,
+            mentionedMessage,
+            pushMessage,
+            senderNickName
+          });
+        } else {
+          im.sysManage.sendGroupMessage({
+            content,
+            gid: this.gid
+            // ext: "自定义消息字段",
+          });
+        }
         setTimeout(() => {
           this.setData({
             inputValue: ''
@@ -375,8 +400,68 @@ export default {
       }
     },
 
+    getMemberList() {
+      const im = getApp().getIM();
+      if (!im) return;
+
+      im.groupManage
+        .asyncGetGroupMembers(this.gid)
+        .then((res) => {
+          this.setData({
+            memberList: im.groupManage.getGroupMembers(this.gid)
+          });
+        })
+        .catch((ex) => {
+          if (err.data) {
+            console.log('获取群成员列表失败 : ' + err.data.code + ':' + err.data.message);
+          }
+          uni.showToast({ title: '获取群成员列表失败 : ' + err.message });
+        });
+    },
+
+    calcMentionIds() {
+      if (!this.inputValue) {
+        return;
+      }
+
+      let mentionArr = (this.inputValue.split && this.inputValue.split(' ')) || [];
+      const uidArray = [];
+      mentionArr.forEach((mention) => {
+        if (mention.indexOf('@') !== -1) {
+          const mArray = mention.split('@');
+          const display_name = mArray[mArray.length - 1];
+          const rosters = this.memberList.filter((item) => item.display_name === display_name);
+          if (rosters && rosters.length) {
+            const roster = rosters.find((x) => this.mentionSelectedUids.indexOf(x.user_id + '') > -1) || rosters[0];
+            mArray[mArray.length - 1] = '{' + roster.user_id + '}';
+            uidArray.push(roster.user_id);
+          }
+        }
+      });
+      this.setData({
+        mentionSelectedUids: [].concat(uidArray)
+      });
+    },
+
     inputChangeHandler(evt) {
       const inputValue = (evt.detail && evt.detail.value) || '';
+      if (inputValue.length) {
+        const check = inputValue.slice(-1);
+        if (check === '@') {
+          uni.redirectTo({
+            url: '/pages_chat/group/atmemberlist/index?gid=' + this.gid + '&content=' + inputValue.slice(0, inputValue.length - 1)
+          });
+        } else {
+          const slices = inputValue.split('@') || [];
+          if (slices.length >= 2) {
+            const str = slices[slices.length - 1];
+            if (str.indexOf(' ') !== -1) {
+              //包含空格，表示被截断，非@状态
+              this.calcMentionIds();
+            }
+          }
+        }
+      }
       this.setData({
         inputValue
       });
@@ -393,6 +478,10 @@ export default {
     },
 
     goGroupProfile() {
+      const im = getApp().getIM();
+      if (!im) return;
+
+      im.groupManage.openGroup(this.gid);
       uni.navigateTo({
         url: '/pages/profile/userinfo/index?gid=' + this.gid
       });

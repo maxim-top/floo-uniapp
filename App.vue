@@ -1,6 +1,7 @@
 <script>
 import flooim from './sdk/index';
 import { toNumber } from './third/tools';
+var JSONBigString = require('json-bigint');
 
 const AUTO_LOGIN_DELAY = 2000; // ms
 const AUTO_LOGIN_TIMES_MAX = 3;
@@ -122,19 +123,19 @@ export default {
           link: this.globalData.intent.link
         })
         .then((res) => {
-          that.globalData.intent.add_id = res.app_id;
+          that.globalData.intent.app_id = res.app_id;
           that.globalData.intent.uid = parseInt(res.uid);
           that.globalData.intent.text = res.text;
           that.globalData.intent.type = res.type;
           that.globalData.intent.parseLink = true;
-          if (that.getAppid() == that.globalData.intent.add_id) {
+          if (that.getAppid() == that.globalData.intent.app_id) {
             if (that.globalData.intent.code && !that.globalData.intent.hasParseCode) {
               that.codeLogin();
             } else {
               that.imLogin();
             }
           } else {
-            that.setupIM(that.globalData.intent.add_id);
+            that.setupIM(that.globalData.intent.app_id);
           }
         })
         .catch((err) => {
@@ -294,6 +295,58 @@ export default {
       wx.removeStorageSync('lanying_im_logininfo');
     },
 
+    saveLoginInfoList(info) {
+      const list = wx.getStorageSync('lanying_im_logininfo_list') || '';
+      let infoList = [];
+      try {
+        if (info && info.app_id && info.username) {
+          if (list.length) {
+            infoList = JSONBigString.parse(list);
+          }
+          if (infoList.length) {
+            infoList = infoList.filter((item) => {
+              return item.app_id !== info.app_id || item.username !== info.username;
+            });
+          }
+          infoList.unshift(info);
+          wx.setStorageSync('lanying_im_logininfo_list', JSONBigString.stringify(infoList));
+        }
+      } catch (ex) {
+        console.error('Can not parse info list json: ', list);
+        this.removeLoginInfoList();
+      }
+    },
+
+    getLoginInfoList() {
+      const list = wx.getStorageSync('lanying_im_logininfo_list') || '';
+      let infoList = [];
+      try {
+        if (list.length) {
+          infoList = JSONBigString.parse(list);
+        }
+      } catch (ex) {
+        console.error('Can not parse info list json: ', list);
+        this.removeLoginInfoList();
+      }
+      return infoList;
+    },
+
+    removeLoginInfoList() {
+      wx.removeStorageSync('lanying_im_logininfo_list');
+    },
+
+    switchLogin(info) {
+      this.getIM().logout();
+      this.clearCallInfo();
+      this.removeLoginInfo();
+      this.saveLoginInfo({
+        username: info.username,
+        password: info.password
+      });
+      this.setupIM(info.app_id);
+      this.addIMListeners();
+    },
+
     imLogout() {
       const info = this.getLoginInfo();
       const isWeChat = this.isWeChatEnvironment();
@@ -389,7 +442,10 @@ export default {
           wx.showToast({ title: '设备绑定成功:' + device_sn });
         })
         .catch((err) => {
-          wx.showToast({ title: '设备绑定失败:' + err.code + ':' + err.errMsg });
+          if (err.data) {
+            console.log('设备绑定失败 : ' + err.data.code + ':' + err.data.message);
+          }
+          wx.showToast({ title: '设备绑定失败: ' + err.message });
         });
     },
     unbindDeviceToken() {
@@ -403,7 +459,10 @@ export default {
           wx.showToast({ title: '设备解绑成功:' + device_sn });
         })
         .catch((err) => {
-          wx.showToast({ title: '设备解绑失败:' + err.code + ':' + err.errMsg });
+          if (err.data) {
+            console.log('设备解绑失败 : ' + err.data.code + ':' + err.data.message);
+          }
+          wx.showToast({ title: '设备解绑失败: ' + err.errMsg });
         });
     },
 
@@ -507,7 +566,13 @@ export default {
       // this.bindDeviceToken( device_token, notifier_name );
 
       const info = this.getLoginInfo();
-      const username = info ? info.username : '';
+
+      const im = this.getIM();
+      if (im) {
+        info.user_id = im.userManage.getUid();
+        info.app_id = im.userManage.getAppid();
+        this.saveLoginInfoList(info);
+      }
 
       if (this.globalData.intent.uid) {
         uni.navigateTo({

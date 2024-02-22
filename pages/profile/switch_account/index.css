@@ -1,0 +1,58 @@
+.back {
+  height: 64rpx;
+  width: 120rpx;
+}
+.back .back_kmg {
+  width: 40rpx;
+  height: 40rpx;
+  margin-top: 18rpx;
+  margin-left: 20rpx;
+}
+
+.container {
+  margin: 0;
+  margin-top: 3rpx;
+  display: block;
+  padding: 0 30rpx;
+  padding-top: 64px;
+}
+
+.account_list {
+  margin-top: 20rpx;
+}
+
+.item {
+  height: 120rpx;
+  border-top: 1rpx solid #eee;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.item .info {
+  float: left;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 66.6%;
+}
+
+.item .uname {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.item .uid {
+  font-size: 26rpx;
+  color: gray;
+}
+
+.check {
+  position: absolute;
+  width: 34rpx;
+  height: 24rpx;
+  right: 20rpx;
+  top: 50rpx;
+}

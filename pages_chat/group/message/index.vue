@@ -102,6 +102,7 @@ export default {
       attach: '',
       type: '',
       toType: '',
+      isWeChat: false,
 
       showExt: false,
       showExtTitle: ' 显示扩展 ',
@@ -245,7 +246,8 @@ export default {
       videoContext,
       id,
       time,
-      from
+      from,
+      isWeChat: getApp().isWeChatEnvironment()
     });
   },
   mounted: function () {

@@ -181,8 +181,12 @@ const getMessageStatus = (cid, mid, isGroup = false) => {
     message = messageStore.getRosterMessageById(cid, mid);
   }
 
-  const status = Object.keys(STATIC_MESSAGE_STATUS)[message.status];
-  return status ? status.toLowerCase() : undefined;
+  if (message && message.status) {
+    const status = Object.keys(STATIC_MESSAGE_STATUS)[message.status];
+    return status ? status.toLowerCase() : undefined;
+  } else {
+    return undefined;
+  }
 };
 
 const asyncFileUpload = (param) => {

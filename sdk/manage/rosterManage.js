@@ -156,6 +156,7 @@ export default {
   asyncAccept: http.rosterAccept,
   asyncDecline: http.rosterDecline,
   asyncUpdateRosterExt: http.rosterExt,
+  asyncUpdateRosterAlias: http.rosterAlias,
   asyncSearchRosterByName: http.rosterName,
   asyncSearchRosterById: http.rosterId
 };

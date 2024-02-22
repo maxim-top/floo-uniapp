@@ -79,6 +79,11 @@
   white-space: nowrap;
 }
 
+.container .item .sright .right {
+  width: 40rpx;
+  height: 40rpx;
+}
+
 .buttonFrame {
   position: fixed;
   margin-top: 40rpx;
