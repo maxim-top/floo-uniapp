@@ -65,6 +65,10 @@
   max-width: 80%;
 }
 
+.item .last_msg .at_tips {
+  color: red;
+}
+
 .item .unread_number {
   position: absolute;
   top: 7rpx;

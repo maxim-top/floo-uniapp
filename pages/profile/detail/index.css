@@ -33,6 +33,11 @@
   white-space: nowrap;
 }
 
+.container .item .sright_switch {
+  margin-top: 20rpx;
+  text-align: right;
+}
+
 .buttonFrame {
   height: 100rpx;
   line-height: 100rpx;

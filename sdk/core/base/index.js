@@ -6,6 +6,7 @@ import './messageReceiver';
 import rosterManage from '../../manage/rosterManage';
 import groupManage from '../../manage/groupManage';
 import dnsManager from '../../manage/dnsManager';
+import userManage from '../../manage/userManage';
 
 let config = {};
 let loginSwap = null;
@@ -58,6 +59,7 @@ const webim = function ({
         const token = infoStore.getToken();
         const tokenAppId = infoStore.getTokenAppId();
         if (user_id && token && tokenAppId == appid) {
+          infoStore.saveUid(user_id);
           const rosterRequest = rosterManage.asyncGetRosterIdList(true);
           const groupRequet = groupManage.asyncGetJoinedGroups(true);
           Promise.all([rosterRequest, groupRequet])
@@ -82,6 +84,7 @@ const webim = function ({
     })
     .catch((ex) => {
       console.log('flooim init error, please retry later: ', ex);
+      fire('flooError', { category: 'DNS_FAILED', desc: ex.message });
     });
 };
 
@@ -334,9 +337,54 @@ webim.off = function (options, ext) {
   }
 };
 
-webim.logout = function () {
+webim.kickAllWeb = function () {
+  userManage
+    .asyncGetDeviceList()
+    .then((device_list) => {
+      if (device_list && device_list.length) {
+        if (device_list.length === 1) {
+          webim.cleanup();
+        } else {
+          let arr = [];
+          device_list.forEach((device) => {
+            if (device.device_sn != userManage.getDeviceSN() && device.platform === 6) {
+              arr.push(
+                new Promise((resolve, reject) => {
+                  userManage
+                    .asyncKickDevice({ device_sn: device.device_sn })
+                    .then(() => {
+                      resolve();
+                    })
+                    .catch((ex) => {
+                      reject(ex);
+                    });
+                })
+              );
+            }
+          });
+          Promise.all(arr).then(() => {
+            webim.cleanup();
+          });
+        }
+      }
+    })
+    .catch((ex) => {
+      console.log('flooim asyncGetDeviceList error: ', ex);
+    });
+};
+webim.logout = function (opt) {
   io.disConnect();
-  webim.cleanup();
+  isLogin = false;
+  if (opt) {
+    if (opt.quitAllWeb) {
+      webim.kickAllWeb();
+    }
+    if (!opt.linkLogin) {
+      webim.cleanup(); // for wx uni app, only one page login, need cleanup.
+    }
+  } else {
+    webim.cleanup(); // for wx uni app, only one page login, need cleanup.
+  }
 };
 
 webim.isReady = function () {

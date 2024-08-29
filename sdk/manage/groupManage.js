@@ -1,9 +1,10 @@
 import http from '../core/base/io/index';
 import { fire } from '../utils/cusEvent';
 import dataLogics from '../core/base/dataLogics';
-import { groupStore, messageStore } from '../utils/store';
+import { groupStore, messageStore, recentStore } from '../utils/store';
 import { formatJson } from '../utils/tools';
-import { makeRecallMessage, makeContentAppendMessage, makeReplaceMessage } from '../core/base/messageMaker';
+import { makeRecallMessage, makeDeleteMessage, makeContentAppendMessage, makeReplaceMessage } from '../core/base/messageMaker';
+
 const asyncGetGroupInfo = (group_id, froce) => {
   group_id = group_id - 0;
   const ret = groupStore.getGroupInfo(group_id) || {};
@@ -114,8 +115,14 @@ const readGroupMessage = (group_id, mid) => {
 
 const recallMessage = (uid, mid) => {
   const smessage = makeRecallMessage(uid, mid);
+  fire('swapSendMessage', formatJson(smessage));
   fire('sendMessage', smessage);
-  fire('swapSendMessage', smessage);
+};
+
+const deleteMessage = (uid, mid) => {
+  const smessage = makeDeleteMessage(uid, mid);
+  fire('swapSendMessage', formatJson(smessage));
+  fire('sendMessage', smessage);
 };
 
 const appendMessageContent = (uid, mid, content) => {
@@ -136,6 +143,8 @@ const replaceMessage = (uid, mid, content = '', config = null, ext = null) => {
 
 const getUnreadCount = (gid) => messageStore.getUnreadByGroupId(gid);
 
+const consumeGroupAtStatus = (gid) => recentStore.updateRecentsAt(gid, false);
+
 export default {
   asyncGetGroupInfo,
   asyncGetJoinedGroups, // 改成 id 啊
@@ -147,9 +156,11 @@ export default {
   getGruopMessage,
   readGroupMessage,
   recallMessage,
+  deleteMessage,
   appendMessageContent,
   replaceMessage,
   getUnreadCount,
+  consumeGroupAtStatus,
 
   asyncGetAdminList: http.groupAdminList,
   asyncAdminAdd: http.groupAdminAdd,
@@ -181,6 +192,7 @@ export default {
   asyncUpdateAllowMemberModify: http.groupSettingsAllowmembermodify,
   asyncUpdateEnableReadack: http.groupSettingsEnablereadack,
   asyncUpdateHistoryVisible: http.groupSettingsHistoryvisible,
+  asyncHideMemberInfo: http.groupSettingsHideMemberInfo,
   asyncUpdateRequireadminapproval: http.groupSettingsRequireadminapproval,
   asyncBanAll: http.groupSettingsBanAll,
   asyncUnBanAll: http.groupSettingsUnBanAll,

@@ -13,7 +13,22 @@ export default {
     const host = uni.getSystemInfoSync().host;
     if (host && host.env && host.env === 'WeChat') {
       this.globalData.isWeChat = true;
-      uni.showShareMenu();
+      uni.showShareMenu({
+        withShareTicket: false,
+        menus: ['shareAppMessage', 'shareTimeline']
+      });
+    } else {
+      let params = new URL(document.location).searchParams;
+      if (params.get('link')) {
+        this.globalData.intent.link = params.get('link');
+        this.globalData.intent.hasParseLink = false;
+        this.globalData.autoLogin = false;
+      }
+      if (params.get('code')) {
+        this.globalData.intent.code = params.get('code');
+        this.globalData.intent.hasParseCode = false;
+        this.globalData.autoLogin = false;
+      }
     }
   },
 
@@ -32,11 +47,13 @@ export default {
       if (this.globalData.intent.oldLink != options.query.link) {
         this.globalData.intent.link = options.query.link;
         this.globalData.intent.hasParseLink = false;
+        this.globalData.autoLogin = false;
       }
 
       if (options.query.code && this.globalData.intent.oldCode != options.query.code) {
         this.globalData.intent.code = options.query.code;
         this.globalData.intent.hasParseCode = false;
+        this.globalData.autoLogin = false;
       }
     }
     this.ensureIMLogin();
@@ -636,4 +653,5 @@ export default {
 </script>
 <style>
 @import './app.css';
+@import 'highlight.js/styles/atom-one-light.css';
 </style>

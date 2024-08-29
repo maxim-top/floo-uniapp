@@ -63,6 +63,10 @@ const checkSuccess = (messageObj) => {
     const category = 'LICENSE';
     const desc = '超出 LICENSE 用户数限制，请购买更高规格服务。';
     fire('flooError', { category, desc });
+  } else if (code === STATIC_FRAME_ERROR_STATUS.FAIL) {
+    const category = 'FAIL';
+    const desc = reason;
+    fire('flooError', { category, desc });
   } else {
     const category = code;
     const desc = reason;
@@ -94,17 +98,20 @@ const receiveMessage = (message) => {
 const receiveUnread = (unreadMb) => {
   const { unread = [] } = unreadMb;
   fire('imReceivedUnread', unread);
+  let count = 0;
   unread.forEach((conversationUnread) => {
     const { xid, n } = conversationUnread;
     if (n > 0) {
       // fire('sendMessage', makeUnreadUl(xid)); //发一个unread ul
-      fire(
-        'sendMessage',
-        makeSyncul({
-          xid,
-          next_key: 0
-        })
-      ); // 有nextkey，接着sync
+      setTimeout(() => {
+        fire(
+          'sendMessage',
+          makeSyncul({
+            xid,
+            next_key: 0
+          })
+        ); // 有nextkey，接着sync
+      }, 1000 * Math.ceil(count++ / 20)); // 每秒钟处理20个上行未读会话请求。
     }
   });
 };
@@ -334,14 +341,20 @@ const receiveUserNotice = (meta) => {
     type === STATIC_USERNOTICE_TYPE.FROZEN ||
     type === STATIC_USERNOTICE_TYPE.REMOVED ||
     type === STATIC_USERNOTICE_TYPE.KICKED_BY_OTHER_DEVICE ||
-    type === STATIC_USERNOTICE_TYPE.DEVICE_REMOVED ||
-    type === STATIC_USERNOTICE_TYPE.CLUSTER_CHANGED ||
-    type === STATIC_USERNOTICE_TYPE.DNS_UPDATE
+    type === STATIC_USERNOTICE_TYPE.DEVICE_REMOVED
   ) {
     // 这些都需要重新登录，或退出
     infoStore.deleteToken();
     infoStore.deleteDeviceSN();
     fire('flooNotice', { category: 'action', desc: 'relogin_manually' });
+  }
+
+  if (type === STATIC_USERNOTICE_TYPE.CLUSTER_CHANGED || type === STATIC_USERNOTICE_TYPE.DNS_UPDATE) {
+    infoStore.deleteToken();
+    fire('retrieve_dns');
+    setTimeout(() => {
+      fire('flooNotice', { category: 'action', desc: 'relogin' });
+    }, 2000);
   }
 
   if (type === STATIC_USERNOTICE_TYPE.UNKNOWN) {

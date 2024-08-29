@@ -109,6 +109,8 @@ export default {
     this.setData({
       showing: true
     });
+    const im = getApp().getIM();
+    im.groupManage.consumeGroupAtStatus(this.gid);
   },
   onUnload: function () {
     this.setData({
@@ -262,6 +264,7 @@ export default {
 
       if (this.showing && im) {
         im.groupManage.readGroupMessage(this.gid);
+        im.groupManage.consumeGroupAtStatus(this.gid);
       }
     },
 

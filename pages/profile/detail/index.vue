@@ -26,8 +26,8 @@
         <view class="sleft">
           <text>昵称</text>
         </view>
-        <view class="sright">
-          <text>{{ profile.nick_name }}</text>
+        <view class="sright" @tap="changeNickName">
+          <text>{{ profile.nick_name || '点击设置' }}</text>
         </view>
       </view>
       <view class="item">
@@ -46,6 +46,22 @@
           <text>{{ profile.email }}</text>
         </view>
       </view>
+      <view class="item">
+        <view class="sleft">
+          <text>好友验证</text>
+        </view>
+        <view class="sright_switch">
+          <switch color="#3477EC" style="transform: scale(0.6)" :checked="auth_check" @change="switchRosterCheck" />
+        </view>
+      </view>
+      <view class="item">
+        <view class="sleft">
+          <text>群邀请验证</text>
+        </view>
+        <view class="sright_switch">
+          <switch color="#3477EC" style="transform: scale(0.6)" :checked="group_confirm" @change="switchGroupCheck" />
+        </view>
+      </view>
       <view class="buttonFrame" @tap="logout">
         <text>退出登录</text>
       </view>
@@ -53,7 +69,19 @@
         <text style="border-bottom: 2rpx solid #9b9b9b" @tap="deleteUser">注销账号</text>
         <text @tap="deleteUser">，注销后无法恢复，请谨慎操作</text>
       </view>
-      <uni-popup ref="popup" :is-mask-click="false">
+      <uni-popup ref="changeNickNamePopup" :is-mask-click="false">
+        <view class="popup-content">
+          <text class="title">修改昵称</text>
+          <view class="inputFrame">
+            <input type="text" focused :value="sNickname" placeholder="请输入新昵称" @input="nickNameHandler" />
+          </view>
+          <view class="button_items">
+            <button class="btn_item btn_cancel" @click="cancelChangeNickName">取消</button>
+            <button class="btn_item btn_cancel" @click="confirmChangeNickName">确定</button>
+          </view>
+        </view>
+      </uni-popup>
+      <uni-popup ref="deletePopup" :is-mask-click="false">
         <view class="popup-content">
           <text class="title">注销账号</text>
           <view class="inputFrame">
@@ -78,7 +106,11 @@ export default {
       profile: {},
       navHeight: 0,
       isLogin: false,
-      spass: ''
+      spass: '',
+      sNickname: '',
+      auth_mode: 0,
+      auth_check: false,
+      group_confirm: false
     };
   },
 
@@ -95,6 +127,7 @@ export default {
 
     if (this.isLogin) {
       this.fetchUserInfo();
+      this.fetchUserSettingInfo();
     }
   },
 
@@ -105,6 +138,7 @@ export default {
     });
     if (isLogin && !this.profile.user_id) {
       this.fetchUserInfo();
+      this.fetchUserSettingInfo();
     }
   },
 
@@ -115,11 +149,22 @@ export default {
 
     fetchUserInfo() {
       const im = getApp().getIM();
-      const token = im.userManage.getToken();
-      const app_id = im.userManage.getAppid();
+      if (!im) return;
       im.userManage.asyncGetProfile(true).then((profile) => {
         this.setData({
           profile
+        });
+      });
+    },
+
+    fetchUserSettingInfo() {
+      const im = getApp().getIM();
+      if (!im) return;
+      im.userManage.asyncGetSettings().then((res) => {
+        this.setData({
+          auth_mode: res.auth_mode,
+          auth_check: res.auth_mode === 1 ? true : false,
+          group_confirm: res.group_confirm
         });
       });
     },
@@ -144,9 +189,99 @@ export default {
       }
     },
 
+    changeNickName() {
+      if (this.profile.nick_name && this.profile.nick_name.length) {
+        this.setData({
+          sNickname: this.profile.nick_name
+        });
+      }
+      this.$refs.changeNickNamePopup.open('center');
+    },
+
+    nickNameHandler(e) {
+      this.setData({
+        sNickname: e.detail.value
+      });
+    },
+
+    cancelChangeNickName() {
+      this.$refs.changeNickNamePopup.close();
+      this.setData({
+        sNickname: ''
+      });
+    },
+
+    confirmChangeNickName() {
+      this.$refs.changeNickNamePopup.close();
+      const im = getApp().getIM();
+      let that = this;
+
+      if (!im) return;
+
+      if (this.sNickname === this.profile.nick_name) {
+        uni.showToast({ title: '新昵称与原昵称相同！' });
+      } else {
+        im.userManage
+          .asyncUpdateNickName({ nick_name: this.sNickname })
+          .then(() => {
+            that.fetchUserInfo();
+          })
+          .catch((err) => {
+            console.log(err);
+            uni.showToast({ title: '更新昵称失败！' });
+          });
+        this.setData({
+          sNickname: ''
+        });
+      }
+    },
+
+    switchRosterCheck() {
+      if (this.isLogin) {
+        let that = this;
+        const im = getApp().getIM();
+        if (!im) return;
+
+        const auth_mode = this.auth_mode === 1 ? 0 : 1;
+        im.userManage
+          .asyncUpdateSettings({ auth_mode, user_id: this.profile.user_id })
+          .then(() => {
+            that.setData({
+              auth_mode: auth_mode,
+              auth_check: auth_mode === 1 ? true : false
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            uni.showToast({ title: '更新好友验证失败！' });
+          });
+      }
+    },
+
+    switchGroupCheck() {
+      if (this.isLogin) {
+        let that = this;
+        const im = getApp().getIM();
+        if (!im) return;
+
+        const group_confirm = !this.group_confirm;
+        im.userManage
+          .asyncUpdateSettings({ group_confirm, user_id: this.profile.user_id })
+          .then(() => {
+            that.setData({
+              group_confirm: group_confirm
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            uni.showToast({ title: '更新群邀请验证失败！' });
+          });
+      }
+    },
+
     deleteUser() {
       if (this.isLogin) {
-        this.$refs.popup.open('center');
+        this.$refs.deletePopup.open('center');
       } else {
         uni.navigateTo({
           url: '../account/loginreminder/index'
@@ -161,14 +296,14 @@ export default {
     },
 
     cancelLogout() {
-      this.$refs.popup.close();
+      this.$refs.deletePopup.close();
       this.setData({
         spass: ''
       });
     },
 
     confirmLogout() {
-      this.$refs.popup.close();
+      this.$refs.deletePopup.close();
       const im = getApp().getIM();
       im.userManage
         .asyncDeleteUser({

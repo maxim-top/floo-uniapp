@@ -1,6 +1,5 @@
 import log from '../log';
 import { transferToLong } from '../tools';
-var JSONBigString = require('json-bigint');
 
 const PARTITION_NUMBER = 31;
 
@@ -14,7 +13,7 @@ const partitionId = (key) => {
   return key % PARTITION_NUMBER;
 };
 
-const saveItem = (key, item, hasuid = true, partition_key = -1) => {
+const saveItem = (key, item, hasuid = true, partition_key = -1, sessionStore = false) => {
   if (typeof item === 'undefined' || typeof key === 'undefined') {
     log.error('localstorage save error:', key, item);
     return;
@@ -50,7 +49,7 @@ const saveItem = (key, item, hasuid = true, partition_key = -1) => {
   }
 };
 
-const getItem = (key, hasuid = true, partition_key = -1) => {
+const getItem = (key, hasuid = true, partition_key = -1, sessionStore = false) => {
   if (typeof key === 'undefined') {
     log.error('localstorage get error:', key);
     return;
@@ -69,7 +68,7 @@ const getItem = (key, hasuid = true, partition_key = -1) => {
   if (!itemString) return undefined;
   let ret = itemString;
   try {
-    ret = JSONBigString.parse(itemString);
+    ret = JSON.parse(itemString);
   } catch (ex) {
     //
   }

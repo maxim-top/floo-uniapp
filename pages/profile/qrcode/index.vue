@@ -78,7 +78,7 @@ export default {
         avatar = '/static/pages/image/r_b.png';
       }
 
-      profile.avatar = avatar; // profile.nick_name = profile.alias || profile.nick_name || profile.username;
+      profile.avatar = avatar; // profile.nick_name = profile.nick_name || profile.username;
 
       this.setData({
         profile

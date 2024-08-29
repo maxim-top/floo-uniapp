@@ -104,6 +104,13 @@ export default {
       isWechat: getApp().isWeChatEnvironment()
     });
 
+    if (this.isWechat) {
+      uni.showShareMenu({
+        withShareTicket: false,
+        menus: ['shareAppMessage', 'shareTimeline']
+      });
+    }
+
     if (this.isLogin) {
       this.fetchAvatar();
       this.getIsBind();
@@ -120,7 +127,7 @@ export default {
     this.setData({
       isLogin
     });
-    if (isLogin && (!this.profile.user_id || this.profile.user_id != im.userManage.getUid())) {
+    if (isLogin) {
       this.fetchAvatar();
     }
 
@@ -186,7 +193,7 @@ export default {
           avatar = '/static/pages/image/r_b.png';
         }
 
-        profile.avatar = avatar; // profile.nick_name = profile.alias || profile.nick_name || profile.username;
+        profile.avatar = avatar; // profile.nick_name = profile.nick_name || profile.username;
         this.setData({
           profile
         });
@@ -307,11 +314,9 @@ export default {
     },
 
     goSwitchAccount() {
-      if (this.isLogin) {
-        uni.navigateTo({
-          url: './switch_account/index'
-        });
-      }
+      uni.navigateTo({
+        url: './switch_account/index'
+      });
     },
 
     goProfile() {

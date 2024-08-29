@@ -87,7 +87,8 @@ export default {
       menuCurr: 0,
       navHeight: 0,
       showsupports: false,
-      isLogin: false
+      isLogin: false,
+      isWeChat: false
     };
   },
 
@@ -95,8 +96,17 @@ export default {
   props: {},
   onLoad: function () {
     this.setData({
-      navHeight: getApp().getNavHeight()
+      navHeight: getApp().getNavHeight(),
+      isWeChat: getApp().isWeChatEnvironment()
     });
+
+    if (this.isWeChat) {
+      uni.showShareMenu({
+        withShareTicket: false,
+        menus: ['shareAppMessage', 'shareTimeline']
+      });
+    }
+
     const im = getApp().getIM();
 
     if (im) {

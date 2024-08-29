@@ -101,6 +101,14 @@
             <text class="rtext">{{ groupInfo.description }}</text>
           </view>
         </view>
+        <view class="item">
+          <view class="sleft">
+            <text class="ltext">群名片</text>
+          </view>
+          <view class="sright" @tap="changeGroupDisplayName">
+            <text class="rtext">{{ groupDisplayName || '点击设置' }}</text>
+          </view>
+        </view>
         <view class="item" @tap="goGroupMemberList">
           <view class="sleft">
             <text class="ltext">群成员列表</text>
@@ -114,6 +122,18 @@
     <view class="buttonFrame" @tap="goChat">
       <button class="button_item">开始聊天</button>
     </view>
+    <uni-popup ref="changeGroupDisplayNamePopup" :is-mask-click="false">
+      <view class="popup-content">
+        <text class="title">设置群名片</text>
+        <view class="inputFrame">
+          <input type="text" focused :value="sInputDisplayName" placeholder="请输入新的群名片" @input="groupDisplayNameHandler" />
+        </view>
+        <view class="button_items">
+          <button class="btn_item btn_cancel" @click="cancelChangeGroupDisplayName">取消</button>
+          <button class="btn_item btn_cancel" @click="confirmChangeGroupDisplayName">确定</button>
+        </view>
+      </view>
+    </uni-popup>
   </view>
 </template>
 
@@ -125,7 +145,9 @@ export default {
       groupInfo: {},
       navHeight: 0,
       uid: 0,
-      gid: 0
+      gid: 0,
+      sInputDisplayName: '',
+      groupDisplayName: ''
     };
   },
 
@@ -171,7 +193,10 @@ export default {
     },
 
     getGroupInfo() {
+      let that = this;
       const im = getApp().getIM();
+      if (!im) return;
+
       im.groupManage
         .asyncGetInfo({
           group_id: this.gid
@@ -184,13 +209,81 @@ export default {
           this.setData({
             groupInfo: res
           });
-          console.log(res);
+          const uid = im.userManage.getUid();
+          im.groupManage
+            .asyncGetMemberDisplayName({
+              group_id: that.gid,
+              user_list: [uid]
+            })
+            .then((res) => {
+              if (!res || !res.length) {
+                return;
+              }
+              res.forEach((item) => {
+                that.setData({
+                  groupDisplayName: item.display_name
+                });
+              });
+            })
+            .catch((err) => {
+              console.log('');
+              uni.showToast({ title: '群名片获取失败' });
+            });
         })
         .catch((ex) => {
           uni.showToast({
             title: '群信息获取失败'
           });
         });
+    },
+
+    changeGroupDisplayName() {
+      if (this.groupDisplayName && this.groupDisplayName.length) {
+        this.setData({
+          sInputDisplayName: this.groupDisplayName
+        });
+      }
+      this.$refs.changeGroupDisplayNamePopup.open('center');
+    },
+
+    groupDisplayNameHandler(e) {
+      this.setData({
+        sInputDisplayName: e.detail.value
+      });
+    },
+
+    cancelChangeGroupDisplayName() {
+      this.$refs.changeGroupDisplayNamePopup.close();
+      this.setData({
+        sInputDisplayName: ''
+      });
+    },
+
+    confirmChangeGroupDisplayName() {
+      this.$refs.changeGroupDisplayNamePopup.close();
+      const im = getApp().getIM();
+      let that = this;
+
+      if (!im) return;
+
+      if (this.sInputDisplayName === this.groupDisplayName) {
+        uni.showToast({ title: '新群名片与原群名片相同！' });
+      } else {
+        im.groupManage
+          .asyncUpdateDisplayName({
+            group_id: this.groupInfo.group_id,
+            value: this.sInputDisplayName
+          })
+          .then(() => {
+            that.setData({
+              groupDisplayName: that.sInputDisplayName
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            uni.showToast({ title: '设置群名片失败！' });
+          });
+      }
     },
 
     backClick() {

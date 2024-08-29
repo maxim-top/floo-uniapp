@@ -31,6 +31,7 @@
           </view>
         </view>
         <view class="last_msg">
+          <text v-if="conversation.hasAt" class="at_tips">[有人@我]</text>
           <text>{{ conversation.content }}</text>
         </view>
       </view>
@@ -45,6 +46,7 @@ export default {
       conversationList: [],
       navHeight: 0,
       isLogin: false,
+      isWeChat: false,
       system_avatar: {
         name: '系统通知',
         avatar: '/static/pages/image/tab/setting.png'
@@ -67,9 +69,8 @@ export default {
       });
       if (getApp().isLoginPage === false) {
         getApp().isLoginPage = true;
-        const isWeChat = getApp().isWeChatEnvironment();
         uni.reLaunch({
-          url: isWeChat ? '../profile/index' : '../login/index'
+          url: this.isWeChat ? '../profile/index' : '../login/index'
         });
       }
     } else {
@@ -78,8 +79,16 @@ export default {
   },
   onLoad: function () {
     this.setData({
-      navHeight: getApp().getNavHeight()
+      navHeight: getApp().getNavHeight(),
+      isWeChat: getApp().isWeChatEnvironment()
     });
+
+    if (this.isWeChat) {
+      uni.showShareMenu({
+        withShareTicket: false,
+        menus: ['shareAppMessage', 'shareTimeline']
+      });
+    }
 
     const im = getApp().getIM();
     if (im) {
@@ -121,6 +130,10 @@ export default {
           url: '../../pages_chat/roster/index?uid=' + id
         });
       } else {
+        const im = getApp().getIM();
+        if (!im) return;
+        im.groupManage.consumeGroupAtStatus(id);
+
         wx.navigateTo({
           url: '../../pages_chat/group/index?gid=' + id
         });
@@ -139,6 +152,7 @@ export default {
         const id = item.id;
         const content = item.content;
         const timestamp = item.timestamp;
+        const hasAt = item.hasAt;
         let avatar = '';
         const unreadCount = item.type == 'roster' ? im.rosterManage.getUnreadCount(id) : im.groupManage.getUnreadCount(id);
         const unread = unreadCount > 0 ? unreadCount : 0;
@@ -170,6 +184,7 @@ export default {
           timestamp,
           avatar,
           unread,
+          hasAt,
           sid: id
         };
       });

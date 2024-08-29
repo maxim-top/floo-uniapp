@@ -123,7 +123,7 @@ const metaToCustomer = (meta) => {
   let attach = null;
   let sconfig = null;
   try {
-    attach = JSONBigString.parse(attachment);
+    attach = JSON.parse(attachment);
   } catch (ex) {
     //
   }
@@ -172,4 +172,24 @@ const metaToRtcSignalCustomer = (meta) => {
   return content;
 };
 
-export { formatJson, transferToLong, toLong, toNumber, numToString, Uint8ArrayToString, stringToUint8Array, metaToCustomer, metasToCustomer, metaToRtcSignalCustomer };
+const intoSubArrays = (sourceArray, chunks = 2) => {
+  const result = Array.from(Array(Math.ceil(sourceArray.length / chunks)), (item) => []);
+  sourceArray.forEach((item, i) => {
+    result[Math.floor(i / chunks)].push(item);
+  });
+  return result;
+};
+
+export {
+  formatJson,
+  transferToLong,
+  toLong,
+  toNumber,
+  numToString,
+  Uint8ArrayToString,
+  stringToUint8Array,
+  metaToCustomer,
+  metasToCustomer,
+  metaToRtcSignalCustomer,
+  intoSubArrays
+};

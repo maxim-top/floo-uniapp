@@ -69,7 +69,6 @@ import { toNumber, numToString } from '../../../third/tools';
 import moment from '../../../third/moment';
 import { Marked } from '../../../third/marked.min.js';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-light.css';
 import { markedHighlight } from 'marked-highlight';
 var JSONBigString = require('json-bigint');
 
@@ -159,15 +158,24 @@ export default {
     let ext = message.ext || '';
     let addr = '';
     let fileName = '';
-    let username = '';
     const fromUserObj = im.rosterManage.getRosterInfo(from);
 
     let avatar = im.sysManage.getImage({
       avatar: fromUserObj.avatar,
       sdefault: '/static/pages/image/r_b.png'
     });
-    username = fromUserObj.nick_name || fromUserObj.username || '';
 
+    let username = '';
+    let members = im.groupManage.getGroupMembers(message.to);
+    for (let i = 0; i < members.length; i++) {
+      if (members[i].user_id === toNumber(from)) {
+        username = members[i].display_name;
+        break;
+      }
+    }
+    if (username === '') {
+      username = fromUserObj.nick_name || fromUserObj.username || '';
+    }
     if (from == uid) {
       username = '我自己';
     }

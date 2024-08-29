@@ -89,8 +89,18 @@ export default {
                 avatar
               });
             });
+            let list = this.getRosterConversationList();
+            if (list.length && retObj.length) {
+              list = list.filter((item) => {
+                return !retObj.find((x) => x.user_id === item.user_id);
+              });
+              if (list.length > 50) {
+                list = list.slice(0, 50);
+              }
+            }
+            list = list.concat(retObj);
             this.setData({
-              rosterList: retObj,
+              rosterList: list,
               token
             });
           });
@@ -100,6 +110,45 @@ export default {
             title: '获取用户列表失败'
           });
         });
+    },
+
+    getRosterConversationList() {
+      const im = getApp().getIM();
+      const uid = im.userManage.getUid();
+      let convList = im.userManage.getConversationList();
+      convList = convList.filter((x) => x.id !== uid);
+      const allRosterMap = im.rosterManage.getAllRosterDetail() || {};
+      let convListWithCount = convList.map((item) => {
+        const user_id = item.id;
+        const timestamp = item.timestamp;
+        let nick_name = '';
+        let username = '';
+        let avatar = '';
+        if (item.type === 'roster') {
+          const sroster = allRosterMap[user_id] || { user_id };
+          nick_name = sroster.nick_name;
+          username = sroster.username;
+          avatar = im.sysManage.getImage({
+            avatar: sroster.avatar,
+            sdefault: '/static/pages/image/r_b.png'
+          });
+          return {
+            nick_name,
+            username,
+            timestamp,
+            avatar,
+            user_id
+          };
+        } else {
+          return null;
+        }
+      });
+      convListWithCount = convListWithCount.filter((x) => x != null);
+      const sortedConvList = convListWithCount.sort((a, b) => {
+        return a.timestamp < b.timestamp ? 1 : a.timestamp > b.timestamp ? -1 : 0;
+      });
+
+      return sortedConvList;
     },
 
     backClick() {

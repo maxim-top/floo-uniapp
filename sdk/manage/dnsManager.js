@@ -180,21 +180,31 @@ const changeClusterIndex = (appID) => {
 };
 
 const getDnsInfo = (appID) => {
-  return getItem(storage_id('key_dns_infos', appID), false) || {};
+  return getItem(storage_id('key_dns_infos', appID), false, -1, true) || {};
 };
 
 const saveDnsInfo = (appID, dnsInfo) => {
-  saveItem(storage_id('key_dns_infos', appID), dnsInfo, false);
+  saveItem(storage_id('key_dns_infos', appID), dnsInfo, false, -1, true);
 };
 
 const getConfig = (name) => {
   if (!name) return '';
-  return getItem(storage_id('key_dns_config', name), false);
+  return getItem(storage_id('key_dns_config', name), false, -1, true);
 };
 
 const saveConfig = (name, value) => {
   if (!name || !value) return;
-  saveItem(storage_id('key_dns_config', name), value, false);
+  saveItem(storage_id('key_dns_config', name), value, false, -1, true);
+};
+
+const saveAppConfig = (appID, appConfig) => {
+  if (!appID) return {};
+  saveItem(storage_id('key_app_config', appID), appConfig, false, -1, true);
+};
+
+const getAppConfig = (appID) => {
+  if (!appID) return '';
+  return getItem(storage_id('key_app_config', appID), false, -1, true);
 };
 
 bind('retrieve_dns', () => {
@@ -213,6 +223,22 @@ const asyncGetDns = (dnsServer, appID, ws) => {
 
   const sret = getServers(appID);
   if (sret.ratel) {
+    http
+      .getServers(dnsServer, {
+        app_id: appID
+      })
+      .then((res) => {
+        log.info('DNS SUCCESS: ', res);
+        saveServers(appID, res);
+        http
+          .getAppConfig(getServers(appID).ratel, {
+            platform: 6
+          })
+          .then((res) => {
+            log.info('APP CONFIG SUCCESS: ', res);
+            saveAppConfig(appID, res);
+          });
+      });
     return Promise.resolve(sret);
   }
 
@@ -223,13 +249,23 @@ const asyncGetDns = (dnsServer, appID, ws) => {
     .then((res) => {
       log.info('DNS SUCCESS: ', res);
       saveServers(appID, res);
+      getServers(appID);
+      http
+        .getAppConfig(getServers(appID).ratel, {
+          platform: 6
+        })
+        .then((res) => {
+          log.info('APP CONFIG SUCCESS: ', res);
+          saveAppConfig(appID, res);
+        });
       return getServers(appID);
     });
 };
 
 const dnsManager = {
   asyncGetDns,
-  getServers
+  getServers,
+  getAppConfig
 };
 
 export default dnsManager;

@@ -66,7 +66,8 @@ export default {
       if (!im) return;
 
       return im.sysManage.getImage({
-        avatar
+        avatar,
+        sdefault: '/static/pages/image/r_b.png'
       });
     }
   }

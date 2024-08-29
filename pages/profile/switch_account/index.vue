@@ -44,13 +44,16 @@ export default {
       if (!im) return;
 
       let list = getApp().getLoginInfoList();
-      list.forEach((item) => {
-        if (item.user_id == im.userManage.getUid()) {
-          item.flag = true;
-        } else {
-          item.flag = false;
-        }
-      });
+      if (getApp().isIMLogin()) {
+        list.forEach((item) => {
+          if (item.user_id == im.userManage.getUid()) {
+            item.flag = true;
+          } else {
+            item.flag = false;
+          }
+        });
+      }
+
       this.setData({
         accountList: list
       });

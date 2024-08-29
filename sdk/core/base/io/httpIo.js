@@ -3,6 +3,9 @@ import { request } from '../../../utils/request';
 // dns
 const getServers = (url, params) => request(url, 'get', params, ['app_id'], true);
 
+// app config
+const getAppConfig = (url, params) => request(url + '/app/config', 'get', params, ['platform']);
+
 // link
 const parseLink = (url, params) => request(url, 'get', params, ['link'], true);
 
@@ -70,6 +73,7 @@ const groupSettingsAllowmemberinvitation = (params) => request('/group/settings/
 const groupSettingsAllowmembermodify = (params) => request('/group/settings/allow_member_modify', 'post', params, ['group_id', 'value']);
 const groupSettingsEnablereadack = (params) => request('/group/settings/enable_read_ack', 'post', params, ['group_id', 'value']);
 const groupSettingsHistoryvisible = (params) => request('/group/settings/history_visible', 'post', params, ['group_id', 'value']);
+const groupSettingsHideMemberInfo = (params) => request('/group/settings/hide_member_info', 'post', params, ['group_id', 'value']);
 const groupSettingsRequireadminapproval = (params) => request('/group/settings/require_admin_approval', 'post', params, ['group_id', 'apply_approval']);
 const groupSettingsBanAll = (params) => request('/group/settings/ban_all', 'post', params, ['group_id', 'duration']);
 const groupSettingsUnBanAll = (params) => request('/group/settings/unban_all', 'post', params, ['group_id']);
@@ -119,6 +123,8 @@ const userChangePassword = (params) => request('/user/change_password', 'post', 
 const bindDeviceToken = (params) => request('/user/token/bind', 'post', params, ['device_sn', 'device_token', 'notifier_name']);
 const unbindDeviceToken = (params) => request('/user/token/unbind', 'post', params, [], true);
 const userDelete = (params) => request('/user/delete', 'post', params, ['password']);
+const userDeviceList = (params) => request('/user/device/list', 'get', params, [], true);
+const userKick = (params) => request('/user/kick', 'post', params, ['device_sn']);
 
 // file upload
 const fileForward = (params) => request('/file/upload/forward', 'get', params, ['file_sign', 'access-token', 'to_id', 'to_type'], true);
@@ -138,6 +144,12 @@ const qrlogin = (params) => request('/app/qr_login', 'get', params, ['qr_code'])
 const qrcodeGroupsign = (params) => request('/app/qrcode/group_sign', 'get', params, ['group_id'], true);
 const qrcodeGroupinvite = (params) => request('/app/qrcode/group_invite', 'get', params, ['qr_info'], true);
 
+//wechat official accounts
+const woaqrcode = (params) => request('/app/official_account/qrcode', 'get', params, [], true);
+const woaqrcodestatus = (params) => request('/app/official_account/qrcode_status', 'get', params, ['qrcode_id'], true);
+const woaqrlogin = (params) => request('/app/official_account/login', 'get', params, ['code'], true);
+const woaIsBind = () => request('/app/official_account/is_bind', 'get');
+
 // wechat miniprogram
 const wxbind = (params) => request('/user/bind_openid', 'get', params, ['open_id'], true);
 const wxlogin = (params) => request('/app/wechat_login', 'get', params, ['code'], true);
@@ -149,6 +161,7 @@ const wechatBind = (params) => request('/app/wechat/bind', 'post', params, ['ope
 
 export {
   getServers,
+  getAppConfig,
   parseLink,
   tokenUser,
   tokenId,
@@ -206,6 +219,7 @@ export {
   groupSettingsAllowmembermodify,
   groupSettingsEnablereadack,
   groupSettingsHistoryvisible,
+  groupSettingsHideMemberInfo,
   groupSettingsRequireadminapproval,
   groupSettingsBanAll,
   groupSettingsUnBanAll,
@@ -246,6 +260,8 @@ export {
   bindDeviceToken,
   unbindDeviceToken,
   userDelete,
+  userDeviceList,
+  userKick,
   fileForward,
   asyncFileUpload,
   fileUploadAvatarUrl,
@@ -256,6 +272,10 @@ export {
   qrlogin,
   qrcodeGroupsign,
   qrcodeGroupinvite,
+  woaqrcode,
+  woaqrcodestatus,
+  woaqrlogin,
+  woaIsBind,
   wxbind,
   wxlogin,
   getStaticContact,

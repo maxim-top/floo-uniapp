@@ -137,6 +137,13 @@ export default {
       isWeChat: getApp().isWeChatEnvironment()
     });
 
+    if (this.isWeChat) {
+      uni.showShareMenu({
+        withShareTicket: false,
+        menus: ['shareAppMessage', 'shareTimeline']
+      });
+    }
+
     if (p.username) {
       if (p.password) {
         this.setData({

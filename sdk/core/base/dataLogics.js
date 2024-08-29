@@ -9,10 +9,9 @@
 import { bind, fire } from '../../utils/cusEvent';
 import { groupStore, infoStore, messageStore, noticeStore, recentStore, rosterStore } from '../../utils/store';
 import * as io from './io/httpIo';
-import { metaToCustomer, numToString, toNumber, metaToRtcSignalCustomer } from '../../utils/tools';
+import { metaToCustomer, numToString, toNumber, metaToRtcSignalCustomer, intoSubArrays } from '../../utils/tools';
 import { makeReadAllMessage, makeReadMessageAck, makeRosterRTCMessage } from './messageMaker';
 import { STATIC_MESSAGE_OPTYPE, STATIC_MESSAGE_TYPE, STATIC_MESSAGE_STATUS } from '../../utils/static';
-var JSONBigString = require('json-bigint');
 
 bind('imRostersGroupslistReady', (lists) => {
   const { rosters } = lists;
@@ -156,17 +155,16 @@ const groupAddMemberLogic = (group_id, uids, isNotice, replace) => {
       if (!allRosterInfos[item.user_id] || !allRosterInfos[item.user_id].username) {
         arr.push(item.user_id);
       } else {
+        item.has_nick = false;
         if (item.user_id != uid) {
-          item.display_name =
-            allRosterInfos[item.user_id].alias ||
-            item.display_name ||
-            allRosterInfos[item.user_id].nick_name ||
-            allRosterInfos[item.user_id].username ||
-            allRosterInfos[item.user_id].user_id;
+          if (item.display_name || allRosterInfos[item.user_id].nick_name) {
+            item.has_nick = true;
+          }
+          item.display_name = item.display_name || allRosterInfos[item.user_id].nick_name || allRosterInfos[item.user_id].username || allRosterInfos[item.user_id].user_id;
         } else {
           item.display_name = item.display_name || allRosterInfos[item.user_id].nick_name || allRosterInfos[item.user_id].username || allRosterInfos[item.user_id].user_id;
         }
-
+        item.username = allRosterInfos[item.user_id].username;
         item.avatar = allRosterInfos[item.user_id].avatar;
       }
     });
@@ -178,19 +176,21 @@ const groupAddMemberLogic = (group_id, uids, isNotice, replace) => {
         rosterStore.saveRosterInfo(details);
         const allRosterInfos = rosterStore.getAllRosterInfos();
         res = res.map((sitem) => {
+          if (!allRosterInfos[sitem.user_id]) {
+            allRosterInfos[sitem.user_id] = { user_id: sitem.user_id };
+          }
           if (!sitem.display_name) {
+            sitem.has_nick = false;
             if (sitem.user_id != uid) {
-              sitem.display_name =
-                allRosterInfos[sitem.user_id].alias ||
-                sitem.display_name ||
-                allRosterInfos[sitem.user_id].nick_name ||
-                allRosterInfos[sitem.user_id].username ||
-                allRosterInfos[sitem.user_id].user_id;
+              if (sitem.display_name || allRosterInfos[sitem.user_id].nick_name) {
+                sitem.has_nick = true;
+              }
+              sitem.display_name = sitem.display_name || allRosterInfos[sitem.user_id].nick_name || allRosterInfos[sitem.user_id].username || allRosterInfos[sitem.user_id].user_id;
             } else {
               sitem.display_name = sitem.display_name || allRosterInfos[sitem.user_id].nick_name || allRosterInfos[sitem.user_id].username || allRosterInfos[sitem.user_id].user_id;
             }
           }
-
+          sitem.username = allRosterInfos[sitem.user_id].username;
           sitem.avatar = allRosterInfos[sitem.user_id].avatar;
           return sitem;
         });
@@ -275,7 +275,7 @@ bind('imRosterMessage', (meta) => {
 
   let jext = {};
   try {
-    jext = JSONBigString.parse(ext);
+    jext = JSON.parse(ext);
   } catch (ex) {
     //
   }
@@ -348,7 +348,7 @@ bind('imReceivedUnread', (unread) => {
   const rosterIds = unread.filter((x) => x.type === 1).map((f) => toNumber(f.xid.uid));
   const gids = unread.filter((x) => x.type === 2).map((f) => toNumber(f.xid.uid));
   dealRosterUnread(rosterIds);
-  rostersInfoLogic(rosterIds);
+  // rostersInfoLogic(rosterIds);
   dealGroupUnread(gids);
   groupsInfoLogic(gids);
 });
@@ -368,12 +368,15 @@ const dealRosterUnread = (uids) => {
   });
 
   if (ret.length) {
-    io.rosterListPost({
-      list: ret
-    }).then((res) => {
-      rosterStore.saveRosterInfo(res);
-      recentStore.saveUnreadRecent(uids, 'roster');
+    let subArrays = intoSubArrays(ret, 200); // default max is 200
+    subArrays.forEach((subArray) => {
+      io.rosterListPost({
+        list: subArray
+      }).then((res) => {
+        rosterStore.saveRosterInfo(res);
+      });
     });
+    recentStore.saveUnreadRecent(uids, 'roster');
   } else {
     recentStore.saveUnreadRecent(uids, 'roster');
   }
@@ -515,7 +518,7 @@ bind('imRosterInfoUpdated', (meta) => {
 
   let info = {};
   try {
-    info = JSONBigString.parse(content);
+    info = JSON.parse(content);
   } catch (e) {
     //
   }
@@ -768,7 +771,7 @@ bind('imGroupKicked', (meta) => {
     // messageStore.saveGroupMessage(meta);
     groupDeleteMemberLogic(groupId, toUids); // 里边有fire
   }
-  // fire('onGroupKicked', meta);
+  fire('onGroupKicked', meta);
   // fire('onGroupListUpdate');
 });
 
@@ -896,6 +899,13 @@ bind('imGroupMuted', (meta) => {
   // messageStore.saveGroupMessage(meta);
   fire('onGroupMuted', meta);
 });
+
+bind('imGroupUnmuted', (meta) => {
+  // 不收消息，from 只能是自己
+  // messageStore.saveGroupMessage(meta);
+  fire('onGroupUnmuted', meta);
+});
+
 bind('imGroupUnblocked', (meta) => {
   // messageStore.saveGroupMessage(meta);
   fire('onGroupUnblocked', meta);
@@ -903,11 +913,25 @@ bind('imGroupUnblocked', (meta) => {
 bind('imGroupBaned', (meta) => {
   // 不能发消息， 管理员设置的
   // messageStore.saveGroupMessage(meta);
-  fire('onGroupBaned', meta);
+  const { payload } = meta;
+  const { gid, to = [], content } = payload;
+  const groupId = toNumber(gid.uid);
+  const toUids = [];
+  to.forEach((item) => {
+    toUids.push(toNumber(item.uid));
+  });
+  fire('onGroupBaned', { groupId, toUids, content });
 });
 bind('imGroupUnbaned', (meta) => {
   // messageStore.saveGroupMessage(meta);
-  fire('onGroupUnbaned', meta);
+  const { payload } = meta;
+  const { gid, to = [] } = payload;
+  const groupId = toNumber(gid.uid);
+  const toUids = [];
+  to.forEach((item) => {
+    toUids.push(toNumber(item.uid));
+  });
+  fire('onGroupUnbaned', { groupId, toUids });
 });
 bind('imGroupInfoUpdated', (meta) => {
   const { payload } = meta;
@@ -916,7 +940,7 @@ bind('imGroupInfoUpdated', (meta) => {
   const groupId = toNumber(gid.uid);
   let info = {};
   try {
-    info = JSONBigString.parse(content);
+    info = JSON.parse(content);
   } catch (e) {
     //
   }
@@ -1001,14 +1025,25 @@ const appendRosterMessageContent = (meta, appendedContent, config, ext, editTime
       custom.appendedContent = appendedContent;
       custom.editTimestamp = editTimestamp;
       if (config) {
-        let rConfig = JSONBigString.parse(config);
+        let rConfig = {};
+        try {
+          rConfig = JSON.parse(config);
+        } catch (ex) {
+          //
+        }
         custom.config = mergeJson(custom.config, rConfig);
         custom.appendConfig = rConfig;
       }
       if (ext) {
-        let extension = JSONBigString.parse(custom.ext);
-        let rExtension = JSONBigString.parse(ext);
-        custom.ext = JSONBigString.stringify(mergeJson(extension, rExtension));
+        let extension = {};
+        let rExtension = {};
+        try {
+          extension = JSON.parse(custom.ext);
+          rExtension = JSON.parse(ext);
+        } catch (ex) {
+          //
+        }
+        custom.ext = JSON.stringify(mergeJson(extension, rExtension));
         custom.appendExt = ext;
       }
       messageStore.saveRosterMessage(custom);
@@ -1050,14 +1085,25 @@ const replaceMessage = (meta, content, config, ext, editTimestamp) => {
     custom.content = content;
   }
   if (config) {
-    let rConfig = JSONBigString.parse(config);
+    let rConfig = {};
+    try {
+      rConfig = JSON.parse(config);
+    } catch (ex) {
+      //
+    }
     custom.config = mergeJson(custom.config, rConfig);
     custom.replaceConfig = rConfig;
   }
   if (ext) {
-    let extension = JSONBigString.parse(custom.ext);
-    let rExtension = JSONBigString.parse(ext);
-    custom.ext = JSONBigString.stringify(mergeJson(extension, rExtension));
+    let extension = {};
+    let rExtension = {};
+    try {
+      extension = JSON.parse(custom.ext);
+      rExtension = JSON.parse(ext);
+    } catch (ex) {
+      //
+    }
+    custom.ext = JSON.stringify(mergeJson(extension, rExtension));
     custom.replaceExt = ext;
   }
   return custom;
@@ -1118,12 +1164,15 @@ bind('imReadGroupMessage', (param) => {
   if (mid) {
     // read one message
     const meta = messageStore.getGroupMessageById(group_id, mid);
-    const needAck = changeGroupMessageStatusRead(meta);
+    const { needAck, changed } = changeGroupMessageStatusRead(meta);
     if (needAck && !isReceived) {
       unread_changed = true;
       const groupMemberUid = numToString(meta.from);
       const sframe = makeReadMessageAck(groupMemberUid, mid);
       fire('sendMessage', sframe);
+    }
+    if (!unread_changed) {
+      unread_changed = changed;
     }
   } else {
     // read all messages
@@ -1131,7 +1180,7 @@ bind('imReadGroupMessage', (param) => {
     let mid_read;
 
     allMsgs.forEach((meta) => {
-      const needAck = changeGroupMessageStatusRead(meta);
+      const { needAck, changed } = changeGroupMessageStatusRead(meta);
       if (needAck && !isReceived) {
         unread_changed = true;
         const groupMemberUid = numToString(meta.from);
@@ -1139,6 +1188,9 @@ bind('imReadGroupMessage', (param) => {
         fire('sendMessage', sframe);
       }
       mid_read = meta.id;
+      if (!unread_changed) {
+        unread_changed = changed;
+      }
     });
     messageStore.saveFormatedGroupMessage(group_id, allMsgs);
 
@@ -1164,14 +1216,25 @@ const appendGroupMessageContent = (meta, appendedContent, config, ext, editTimes
       custom.appendedContent = appendedContent;
       custom.editTimestamp = editTimestamp;
       if (config) {
-        let rConfig = JSONBigString.parse(config);
+        let rConfig = {};
+        try {
+          rConfig = JSON.parse(config);
+        } catch (ex) {
+          //
+        }
         custom.config = mergeJson(custom.config, rConfig);
         custom.appendConfig = rConfig;
       }
       if (ext) {
-        let extension = JSONBigString.parse(custom.ext);
-        let rExtension = JSONBigString.parse(ext);
-        custom.ext = JSONBigString.stringify(mergeJson(extension, rExtension));
+        let extension = {};
+        let rExtension = {};
+        try {
+          extension = JSON.parse(custom.ext);
+          rExtension = JSON.parse(ext);
+        } catch (ex) {
+          //
+        }
+        custom.ext = JSON.stringify(mergeJson(extension, rExtension));
         custom.appendExt = ext;
       }
       messageStore.saveGroupMessage(custom);
@@ -1219,7 +1282,7 @@ const changeGroupMessageStatusRead = (meta) => {
       }
     }
   }
-  return needAck;
+  return { needAck, changed };
 };
 
 const changeGroupMessageStatus = (meta, status) => {
@@ -1242,7 +1305,9 @@ const resetLastMessage = (uid, isGroup) => {
   }
 
   if (messages.length > 0) {
-    recentStore.saveRecent(messages[messages.length - 1]);
+    recentStore.saveRecent(messages[messages.length - 1], true);
+  } else {
+    recentStore.deleteRecentById(uid);
   }
 };
 
@@ -1252,9 +1317,9 @@ bind('onActionMessage', (meta) => {
   const cuid = infoStore.getUid() + '';
   const toUid = to ? numToString(to.uid) : 0;
   const fromUid = numToString(from.uid);
-  const messageUid = cuid + '' === fromUid + '' ? toUid : fromUid;
   const allGids = groupStore.getJoinedGroups();
-  const isGroup = allGids.indexOf(toUid - 0) != -1;
+  const isGroup = Array.isArray(allGids) ? allGids.indexOf(toUid - 0) != -1 : false;
+  const messageUid = isGroup ? toUid : cuid + '' === fromUid + '' ? toUid : fromUid;
   const editTimestamp = numToString(edit_timestamp || 0);
 
   if (type !== STATIC_MESSAGE_TYPE.OPER) return;
@@ -1286,6 +1351,7 @@ bind('onActionMessage', (meta) => {
       mid
     });
   } else if (opType === STATIC_MESSAGE_OPTYPE.DELETE) {
+    const isGroup = Array.isArray(allGids) ? allGids.indexOf(xid.uid - 0) != -1 : false;
     !isGroup && messageStore.deleteSingleRosterMessage(xid.uid, mid);
     isGroup && messageStore.deleteSingleGroupMessage(xid.uid, mid);
 

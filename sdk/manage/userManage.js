@@ -15,6 +15,8 @@ export default {
   deleteToken: infoStore.deleteToken,
 
   getDeviceSN,
+  asyncGetDeviceList: http.userDeviceList,
+  asyncKickDevice: http.userKick,
   asyncBindDeviceToken: http.bindDeviceToken,
   asyncUnbindDeviceToken: http.unbindDeviceToken,
   asyncDeleteUser: http.userDelete,

@@ -67,7 +67,6 @@ import { toNumber, numToString } from '../../../third/tools';
 import moment from '../../../third/moment';
 import { Marked } from '../../../third/marked.min.js';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-light.css';
 import { markedHighlight } from 'marked-highlight';
 var JSONBigString = require('json-bigint');
 
