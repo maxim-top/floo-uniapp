@@ -55,6 +55,43 @@
 
 Webstorm 设置可参考[这里](https://www.wenyuanblog.com/blogs/webstorm-eslint-prettier-reformat-code.html)。
 
+## 常见问题
+
+1. 无法导入 flooim，提示
+
+```
+export 'flooim' was not found in '../im/floo-3.0.0'
+```
+
+参考修改 babel.config.js，增加 sourceType: 'unambiguous' 设置：
+
+```
+module.exports = {
+    presets: ["@vue/app", {sourceType: 'unambiguous'}],
+};
+```
+
+2. 找不到 long 模块，提示
+
+```
+module "third/long" is not defined
+```
+
+这是因为 fsevent1 的问题，在 windows 下安装会失败，导致 npm 失败，可参考[这里](https://github.com/angular/angular/issues/13935)，解决方法：
+
+```
+npm i -f
+```
+
+3. vue3适配问题
+
+```
+The requested module '/src/im/floo-3.0.0.js' does not provide an export named 'default'
+```
+
+需要通过 yarn 安装 vite-plugin-commonjs 和 vite-plugin-require-transform 两个插件。
+![](https://docs.lanyingim.com/assets/vue3-import.jpg)
+
 ## 其他
 
 了解更多信息可以阅读[在线文档](https://docs.lanyingim.com/)，或者在本仓库提问 :)
